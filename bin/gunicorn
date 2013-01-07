@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ "$1" == "start" ]; then
+	rm -f ./data/gunicorn.*
+	touch ./data/gunicorn.errors
+	tail -n 0 -f ./data/gunicorn.errors & pid=$!
+	gunicorn -c ./etc/gunicorn.conf eegat:app
+	sleep 1
+	chmod go= ./data/gunicorn.*
+	kill $pid
+elif [ "$1" == "status" ]; then
+	tail ./data/gunicorn.{errors,accesses}
+elif [ "$1" == "reload" ]; then
+	if [ -r ./data/gunicorn.pid ]; then
+		tail -n 0 -f ./data/gunicorn.errors & pid=$!
+		kill -HUP $(cat ./data/gunicorn.pid)
+		sleep 1
+		kill $pid
+	else
+		echo 'no pidfile present'
+	fi
+else
+	if [ -r ./data/gunicorn.pid ]; then
+		tail -n 0 -f ./data/gunicorn.errors & pid=$!
+		kill $(cat ./data/gunicorn.pid)
+		sleep 1
+		kill $pid
+	else
+		echo 'no pidfile present'
+	fi
+fi

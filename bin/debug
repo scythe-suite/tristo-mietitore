@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python eegat/__init__.py

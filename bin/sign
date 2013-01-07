@@ -1,0 +1,12 @@
+#!/bin/bash
+
+url=localhost:5000
+uid=$1
+
+if [ -z "$uid" ]; then
+	echo "sign: missing uid"
+	exit 1
+fi
+
+curl -sL $url/sign/$uid | python
+
