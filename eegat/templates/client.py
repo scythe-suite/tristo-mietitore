@@ -32,12 +32,13 @@ def tar( dir, glob = '*', verbose = True ):
 		if num_files > MAX_NUM_FILES: break
 		for fpath in files:
 			path = join( base, fpath )
-			if fnmatch( path, glob ) and stat( path ).st_size < MAX_FILESIZE:
+			rpath = path[ offset: ]
+			if fnmatch( rpath, glob ) and stat( path ).st_size < MAX_FILESIZE:
 				num_files += 1
 				if num_files > MAX_NUM_FILES: break
-				if verbose: sys.stderr.write( path + '\n' )
+				if verbose: sys.stderr.write( rpath + '\n' )
 				with open( path, 'r' ) as f:
-					ti = tf.gettarinfo( arcname = path[ offset: ], fileobj = f )
+					ti = tf.gettarinfo( arcname = rpath, fileobj = f )
 					tf.addfile( ti, fileobj = f )
 	tf.close()
 	return encodestring( buf.getvalue() )

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export EEGNG_SETTINGS=$(pwd)/conf.py
+
 if [ "$1" == "start" ]; then
 	rm -f ./data/gunicorn.*
 	touch ./data/gunicorn.errors

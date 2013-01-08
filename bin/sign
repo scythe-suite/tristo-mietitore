@@ -8,5 +8,5 @@ if [ -z "$uid" ]; then
 	exit 1
 fi
 
-curl -sL $url/sign/$uid | python
+curl -sL $url/$uid | python
 

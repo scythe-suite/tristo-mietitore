@@ -1,3 +1,4 @@
 #!/bin/bash
 
+export EEGNG_SETTINGS=$(pwd)/conf.py
 python eegat/__init__.py
