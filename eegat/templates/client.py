@@ -4,27 +4,28 @@ import sys
 sys.excepthook = lambda t, v, tb: sys.exit( format_exception_only( t, v )[ -1 ].strip() )
 
 from base64 import encodestring, decodestring
-from fnmatch import fnmatch
 from io import BytesIO
 from os import walk, stat
-from os.path import join, abspath, isdir, expanduser
+from os.path import join, abspath, isdir
+from re import compile as recompile
 from tarfile import TarFile
 from traceback import format_exception_only
 from urllib import urlencode
 from urllib2 import urlopen
 
-SIGNATURE = '{{ signature }}'
-BASE_URL = '{{ base_url }}'
-DOWNLOAD_DIR = expanduser( '{{ download_dir }}' )
 DATA = '{{ data }}'
+SIGNATURE = '{{ signature }}'
+BASE_URL = '{{ request.url_root }}'
+EEG_HOME = '$eeg_home'
 
 MAX_FILESIZE = 10 * 1024
 MAX_NUM_FILES = 1024
 
-def tar( dir, glob = '*', verbose = True ):
+def tar( dir, glob = '.*', verbose = True ):
 	if not isdir( dir ): raise ValueError( '{0} is not a directory'.format( dir ) )
 	dir = abspath( dir )
 	buf = BytesIO()
+	re = recompile( glob )
 	tf = TarFile.open( mode = 'w', fileobj = buf )
 	offset = len( dir ) + 1
 	num_files = 0
@@ -33,7 +34,7 @@ def tar( dir, glob = '*', verbose = True ):
 		for fpath in files:
 			path = join( base, fpath )
 			rpath = path[ offset: ]
-			if fnmatch( rpath, glob ) and stat( path ).st_size < MAX_FILESIZE:
+			if re.search( rpath ) and stat( path ).st_size < MAX_FILESIZE:
 				num_files += 1
 				if num_files > MAX_NUM_FILES: break
 				if verbose: sys.stderr.write( rpath + '\n' )
@@ -77,7 +78,7 @@ if __name__ == '__main__':
 			'_t': tar,
 			'_u': update,
 			'ul': lambda *args: upload( tar( *args, verbose = False ) ),
-			'dl': lambda *args: untar( download(), DOWNLOAD_DIR ),
+			'dl': lambda *args: untar( download(), EEG_HOME ),
 			'id': lambda *args: DATA
 		}
 		res = dispatch[ verb ]( *sys.argv )

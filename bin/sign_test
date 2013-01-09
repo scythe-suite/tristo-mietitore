@@ -8,5 +8,9 @@ if [ -z "$uid" ]; then
 	exit 1
 fi
 
+export EEG_HOME=/tmp/exam_$uid
+rm -rf $EEG_HOME
+mkdir -p $EEG_HOME
+
 curl -sL $url/$uid | python
 

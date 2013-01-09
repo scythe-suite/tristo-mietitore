@@ -34,7 +34,7 @@ def bootstrap( uid ):
 		data = app.config[ 'REGISTERED_UIDS' ][ uid ]
 	except KeyError:
 		return "print 'UID not registered.'", 404, { 'Content-Type': 'text/plain' }
-	client = encodestring( render_template( 'client.py', data = data, signature = sign( uid ), base_url = request.url_root, download_dir = app.config[ 'DOWNLOAD_DIR' ] ) )
+	client = encodestring( render_template( 'client.py', data = data, signature = sign( uid ) ) )
 	return render_template( 'bootstrap.py', client = client ), 200, { 'Content-Type': 'text/plain' }
 
 @app.route( '/', methods = [ 'POST' ] )

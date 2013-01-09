@@ -4,8 +4,6 @@ SESSION_COOKIE_HTTPONLY = False
 SECRET_KEY = 'a very long secret'
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024
 
-DOWNLOAD_DIR = '~/yyy'
-
 UPLOAD_DIR = 'uploads'
 
 REGISTERED_UIDS = """
