@@ -1,5 +1,5 @@
 from base64 import decodestring
-from os import environ, chmod
+from os import environ, chmod, execlp
 from os.path import join
 from subprocess import check_call
 from string import Template
@@ -21,5 +21,5 @@ chmod( dest, 0700 )
 
 check_call( [ dest, 'dl' ] )
 
-#os.environ[ 'PATH' ] = '{}/.bin:{}'.format( os.environ[ 'HOME' ], os.environ[ 'PATH' ] )
-#os.execlp( 'bash', 'bash' )
+environ[ 'PATH' ] = '{0}/bin:{1}'.format( EEG_HOME, environ[ 'PATH' ] )
+execlp( 'bash', 'bash' )

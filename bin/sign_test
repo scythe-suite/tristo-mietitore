@@ -1,16 +1,15 @@
-#!/bin/bash
+sign() {
+	url=localhost:5000
+	uid=$1
 
-url=localhost:5000
-uid=$1
+	if [ -z "$uid" ]; then
+		echo "sign: missing uid"
+		return
+	fi
 
-if [ -z "$uid" ]; then
-	echo "sign: missing uid"
-	exit 1
-fi
+	export EEG_HOME=/tmp/exam_$uid
+	rm -rf $EEG_HOME
+	mkdir -p $EEG_HOME
 
-export EEG_HOME=/tmp/exam_$uid
-rm -rf $EEG_HOME
-mkdir -p $EEG_HOME
-
-curl -sL $url/$uid | python
-
+	exec python <( curl -sL $url/$uid )
+}
