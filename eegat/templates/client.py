@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 import sys
-sys.excepthook = lambda t, v, tb: sys.exit( format_exception_only( t, v )[ -1 ].strip() )
+def _excepthook( t, v, tb ):
+		tb = extract_tb( tb )[ -1 ]
+		f = tb[ 0 ].split( '/' )[ -1 ]
+		l = tb[ 1 ]
+		e = format_exception_only( t, v )[ -1 ].strip()
+		sys.exit( '[{0}:{1}] {2}'.format( f, l, e ) )
+sys.excepthook = _excepthook
 
 from base64 import encodestring, decodestring
 from io import BytesIO
@@ -9,7 +15,7 @@ from os import walk, stat
 from os.path import join, abspath, isdir
 from re import compile as recompile
 from tarfile import TarFile
-from traceback import format_exception_only
+from traceback import extract_tb, format_exception_only
 from urllib import urlencode
 from urllib2 import urlopen
 
