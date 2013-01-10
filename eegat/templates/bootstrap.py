@@ -1,3 +1,14 @@
+#
+# To use this bootstrap script define the following bash function
+#
+#	sign() { eval $( python -c "from urllib2 import urlopen; exec urlopen( '{{ request.url_root }}$1' ).read()" ); }
+#
+# and then invoke it as:
+#
+#	sign UID
+#
+
+
 import sys
 def _excepthook( t, v, tb ):
 		tb = extract_tb( tb )[ -1 ]
