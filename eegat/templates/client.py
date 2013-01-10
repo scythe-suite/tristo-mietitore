@@ -12,7 +12,7 @@ sys.excepthook = _excepthook
 from base64 import encodestring, decodestring
 from io import BytesIO
 from os import walk, stat
-from os.path import join, abspath, isdir
+from os.path import join, abspath, isdir, expanduser, expandvars
 from re import compile as recompile
 from tarfile import TarFile
 from traceback import extract_tb, format_exception_only
@@ -22,7 +22,7 @@ from urllib2 import urlopen
 DATA = '{{ data }}'
 SIGNATURE = '{{ signature }}'
 BASE_URL = '{{ request.url_root }}'
-EEG_HOME = '$eeg_home'
+EEG_HOME = expandvars( expanduser( '{{ config.EEG_HOME }}' ) )
 
 MAX_FILESIZE = 10 * 1024
 MAX_NUM_FILES = 1024
@@ -71,14 +71,23 @@ def download_tar():
 	conn.close()
 	return ''
 
+def setpath():
+	profile = expanduser( '~/.bash_profile' )
+	to_append = 'export PATH="{0}/bin":$PATH # EEG path, do not delete this line'.format( EEG_HOME, SIGNATURE.split( ':' )[ 0 ] )
+	with open( profile, 'r' ) as f: tmp = f.read()
+	if tmp.find( to_append ) !=  -1: return 'bash profile already modified'
+	with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
+	return ''
+
 if __name__ == '__main__':
 	try:
 		_, verb = sys.argv.pop( 0 ), sys.argv.pop( 0 )
 		dispatch = {
 			'_t': tar,
-			'ul': lambda *args: upload_tar( *args ),
-			'dl': lambda *args: download_tar(),
-			'id': lambda *args: DATA
+			'sp': setpath,
+			'ul': upload_tar,
+			'dl': download_tar,
+			'id': lambda *args: ', '.join( [ SIGNATURE.split( ':' )[ 0 ], DATA ] )
 		}
 		res = dispatch[ verb ]( *sys.argv )
 		if res: print res

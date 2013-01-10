@@ -32,12 +32,11 @@ def check( signature ):
 def bootstrap( uid ):
 	try:
 		data = app.config[ 'REGISTERED_UIDS' ][ uid ]
-		client = encodestring( render_template( 'client.py', data = data, signature = sign( uid ) ) )
-		status = 200
 	except KeyError:
 		client = ''
-		status = 200
-	return render_template( 'bootstrap.py', client = client, uid = uid ), status, { 'Content-Type': 'text/plain' }
+	else:
+		client = encodestring( render_template( 'client.py', data = data, signature = sign( uid ) ) )
+	return render_template( 'bootstrap.py', client = client, uid = uid ), 200, { 'Content-Type': 'text/plain' }
 
 @app.route( '/', methods = [ 'POST' ] )
 def handle():

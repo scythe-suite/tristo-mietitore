@@ -1,11 +1,1 @@
-bootstrap() {
-	exec python -c "from urllib2 import urlopen; exec urlopen( 'http://localhost:8000/$1' ).read()"
-}
-
-test() {
-	uid=$1
-	export EEG_HOME=/tmp/eeg_$uid
-	rm -rf $EEG_HOME
-	mkdir -p $EEG_HOME
-	bootstrap $uid
-}
+sign() { exec python -c "from urllib2 import urlopen; exec urlopen( 'http://localhost:8000/$1' ).read()" }
