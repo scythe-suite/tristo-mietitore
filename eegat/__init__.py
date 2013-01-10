@@ -37,7 +37,7 @@ def bootstrap( uid ):
 	except KeyError:
 		client = ''
 		status = 200
-	return render_template( 'bootstrap.py', client = client ), status, { 'Content-Type': 'text/plain' }
+	return render_template( 'bootstrap.py', client = client, uid = uid ), status, { 'Content-Type': 'text/plain' }
 
 @app.route( '/', methods = [ 'POST' ] )
 def handle():

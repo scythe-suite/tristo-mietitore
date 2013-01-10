@@ -35,7 +35,7 @@ def tar( dir = '.', glob = '.*', verbose = True ):
 	tf = TarFile.open( mode = 'w', fileobj = buf )
 	offset = len( dir ) + 1
 	num_files = 0
-	for base, dirs, files in walk( dir ):
+	for base, dirs, files in walk( dir, followlinks = True ):
 		if num_files > MAX_NUM_FILES: break
 		for fpath in files:
 			path = join( base, fpath )
