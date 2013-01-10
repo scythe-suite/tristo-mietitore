@@ -1,15 +1,11 @@
-sign() {
-	url=localhost:5000
+bootstrap() {
+	exec python -c "from urllib2 import urlopen; exec urlopen( 'http://localhost:8000/$1' ).read()"
+}
+
+test() {
 	uid=$1
-
-	if [ -z "$uid" ]; then
-		echo "sign: missing uid"
-		return
-	fi
-
-	export EEG_HOME=/tmp/exam_$uid
+	export EEG_HOME=/tmp/eeg_$uid
 	rm -rf $EEG_HOME
 	mkdir -p $EEG_HOME
-
-	exec python <( curl -sL $url/$uid )
+	bootstrap $uid
 }

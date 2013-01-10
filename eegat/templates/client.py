@@ -27,11 +27,11 @@ EEG_HOME = '$eeg_home'
 MAX_FILESIZE = 10 * 1024
 MAX_NUM_FILES = 1024
 
-def tar( dir, glob = '.*', verbose = True ):
+def tar( dir = '.', glob = '.*', verbose = True ):
 	if not isdir( dir ): raise ValueError( '{0} is not a directory'.format( dir ) )
 	dir = abspath( dir )
+	glob = recompile( glob )
 	buf = BytesIO()
-	re = recompile( glob )
 	tf = TarFile.open( mode = 'w', fileobj = buf )
 	offset = len( dir ) + 1
 	num_files = 0
@@ -40,7 +40,7 @@ def tar( dir, glob = '.*', verbose = True ):
 		for fpath in files:
 			path = join( base, fpath )
 			rpath = path[ offset: ]
-			if re.search( rpath ) and stat( path ).st_size < MAX_FILESIZE:
+			if glob.search( rpath ) and stat( path ).st_size < MAX_FILESIZE:
 				num_files += 1
 				if num_files > MAX_NUM_FILES: break
 				if verbose: sys.stderr.write( rpath + '\n' )
@@ -55,26 +55,20 @@ def untar( data, dir = '.' ):
 	tf = TarFile.open( mode = 'r', fileobj = f )
 	tf.extractall( dir )
 	tf.close()
-	return ''
 
-def upload( data ):
-	conn = urlopen( BASE_URL, urlencode( { 'signature': SIGNATURE, 'data': data } ) )
+def upload_tar( glob = '.*', dir = '.' ):
+	conn = urlopen( BASE_URL, urlencode( {
+		'signature': SIGNATURE,
+		'tar': tar( join( EEG_HOME, dir ), glob, False )
+	} ) )
 	ret = conn.read()
 	conn.close()
 	return ret
 
-def download():
+def download_tar():
 	conn = urlopen( BASE_URL, urlencode( { 'signature': SIGNATURE } ) )
-	ret = conn.read()
+	untar( conn.read(), EEG_HOME )
 	conn.close()
-	return ret
-
-def update():
-	uid, _ = SIGNATURE.split( ':' )
-	conn = urlopen( BASE_URL + uid )
-	ret = conn.read()
-	conn.close()
-	exec compile( ret, '<string>', 'exec' )
 	return ''
 
 if __name__ == '__main__':
@@ -82,9 +76,8 @@ if __name__ == '__main__':
 		_, verb = sys.argv.pop( 0 ), sys.argv.pop( 0 )
 		dispatch = {
 			'_t': tar,
-			'_u': update,
-			'ul': lambda *args: upload( tar( *args, verbose = False ) ),
-			'dl': lambda *args: untar( download(), EEG_HOME ),
+			'ul': lambda *args: upload_tar( *args ),
+			'dl': lambda *args: download_tar(),
 			'id': lambda *args: DATA
 		}
 		res = dispatch[ verb ]( *sys.argv )
@@ -93,4 +86,3 @@ if __name__ == '__main__':
 		sys.exit( 'wrong verb' )
 	except IndexError:
 		sys.exit( 'wrong number of args' )
-

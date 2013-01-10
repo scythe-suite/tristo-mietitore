@@ -32,10 +32,12 @@ def check( signature ):
 def bootstrap( uid ):
 	try:
 		data = app.config[ 'REGISTERED_UIDS' ][ uid ]
+		client = encodestring( render_template( 'client.py', data = data, signature = sign( uid ) ) )
+		status = 200
 	except KeyError:
-		return "print 'UID not registered.'", 404, { 'Content-Type': 'text/plain' }
-	client = encodestring( render_template( 'client.py', data = data, signature = sign( uid ) ) )
-	return render_template( 'bootstrap.py', client = client ), 200, { 'Content-Type': 'text/plain' }
+		client = ''
+		status = 200
+	return render_template( 'bootstrap.py', client = client ), status, { 'Content-Type': 'text/plain' }
 
 @app.route( '/', methods = [ 'POST' ] )
 def handle():
@@ -47,8 +49,8 @@ def handle():
 	except KeyError:
 		pass
 	if not allowed: return 'print "Invalid or absent signature"', 401, { 'Content-Type': 'text/plain' }
-	if 'data' in request.form:
-		data = decodestring( request.form[ 'data' ] )
+	if 'tar' in request.form:
+		data = decodestring( request.form[ 'tar' ] )
 		dest_dir = join( app.config[ 'UPLOAD_DIR' ], uid )
 		if not isdir( dest_dir ): makedirs( dest_dir )
 		dest = join( dest_dir, str( int( time() * 1000 ) ) + '.tar' )
@@ -62,4 +64,4 @@ def handle():
 		return app.config[ 'BUNDLE' ], 200, { 'Content-Type': 'text/plain' }
 
 if __name__ == '__main__':
-	app.run()
+	app.run( port = 8000 )
