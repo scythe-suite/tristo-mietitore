@@ -26,7 +26,8 @@ def check( signature ):
 		uid, check = signature.split( ':' )
 	except ValueError:
 		return False
-	return sign( uid ) == signature
+	else:
+		return sign( uid ) == signature
 
 @app.route( '/<uid>' )
 def bootstrap( uid ):
@@ -40,21 +41,20 @@ def bootstrap( uid ):
 
 @app.route( '/', methods = [ 'POST' ] )
 def handle():
-	allowed = False
 	try:
 		signature = request.form[ 'signature' ]
-		allowed = check( signature )
-		uid, _ = signature.split( ':' )
 	except KeyError:
-		pass
+		allowed = False
+	else:
+		allowed = check( signature )
+		uid = signature.split( ':' )[ 0 ]
 	if not allowed: return 'print "Invalid or absent signature"', 401, { 'Content-Type': 'text/plain' }
 	if 'tar' in request.form:
 		data = decodestring( request.form[ 'tar' ] )
 		dest_dir = join( app.config[ 'UPLOAD_DIR' ], uid )
 		if not isdir( dest_dir ): makedirs( dest_dir )
 		dest = join( dest_dir, str( int( time() * 1000 ) ) + '.tar' )
-		with open( dest, 'w' ) as f:
-			f.write( data )
+		with open( dest, 'w' ) as f: f.write( data )
 		tf = TarFile.open( dest, mode = 'r' )
 		names = tf.getnames()
 		tf.close()

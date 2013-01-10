@@ -8,7 +8,6 @@
 #	sign UID
 #
 
-
 import sys
 def _excepthook( t, v, tb ):
 		tb = extract_tb( tb )[ -1 ]
