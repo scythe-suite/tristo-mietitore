@@ -60,7 +60,7 @@ def handle():
 		tf.close()
 		return '\n'.join( names ), 200, { 'Content-Type': 'text/plain' }
 	else:
-		return app.config[ 'BUNDLE' ], 200, { 'Content-Type': 'text/plain' }
+		return app.config[ 'DOWNLOAD_BUNDLE' ], 200, { 'Content-Type': 'text/plain' }
 
 if __name__ == '__main__':
 	app.run( port = 8000 )

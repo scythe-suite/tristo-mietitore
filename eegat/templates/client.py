@@ -23,6 +23,9 @@ DATA = '{{ data }}'
 SIGNATURE = '{{ signature }}'
 BASE_URL = '{{ request.url_root }}'
 EEG_HOME = expandvars( expanduser( '{{ config.EEG_HOME }}' ) )
+ENVIRONMENT_SETUP = """
+{{ config.ENVIRONMENT_SETUP }}
+"""
 
 MAX_FILESIZE = 10 * 1024
 MAX_NUM_FILES = 1024
@@ -71,11 +74,12 @@ def download_tar():
 	conn.close()
 	return ''
 
-def setpath():
+def setenv():
 	profile = expanduser( '~/.bash_profile' )
-	to_append = 'export PATH="{0}/bin":$PATH # EEG path, do not delete this line'.format( EEG_HOME, SIGNATURE.split( ':' )[ 0 ] )
+	comment = '# EEG environment setup'
+	to_append = comment + ENVIRONMENT_SETUP.format( EEG_HOME )
 	with open( profile, 'r' ) as f: tmp = f.read()
-	if tmp.find( to_append ) !=  -1: return 'bash profile already modified'
+	if tmp.find( comment ) !=  -1: return 'bash profile already modified'
 	with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
 	return ''
 
@@ -84,7 +88,7 @@ if __name__ == '__main__':
 		_, verb = sys.argv.pop( 0 ), sys.argv.pop( 0 )
 		dispatch = {
 			'_t': tar,
-			'sp': setpath,
+			'se': setenv,
 			'ul': upload_tar,
 			'dl': download_tar,
 			'id': lambda *args: ', '.join( [ SIGNATURE.split( ':' )[ 0 ], DATA ] )

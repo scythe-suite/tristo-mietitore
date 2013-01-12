@@ -26,6 +26,8 @@ from traceback import extract_tb, format_exception_only
 client = decodestring( """
 {{ client }}""" )
 
+evnsetup = """{{ config.ENVIRONMENT_SETUP }}"""
+
 if not client:
 
 	print 'echo "UID not registered"'
@@ -39,7 +41,7 @@ else:
 	dest = join( EEG_HOME, '.eeg' )
 	with open( dest, 'w' ) as f: f.write( client )
 	chmod( dest, 0700 )
-	check_output( [ dest, 'sp' ] )
+	check_output( [ dest, 'se' ] )
 	check_output( [ dest, 'dl' ] )
 
-	print 'echo done.; export PATH="{0}/bin":$PATH'.format( EEG_HOME )
+	print '; '.join( ( 'echo done.' + evnsetup.format( EEG_HOME ) ).splitlines() )
