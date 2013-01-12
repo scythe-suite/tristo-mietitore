@@ -23,9 +23,7 @@ DATA = '{{ data }}'
 SIGNATURE = '{{ signature }}'
 BASE_URL = '{{ request.url_root }}'
 EEG_HOME = expandvars( expanduser( '{{ config.EEG_HOME }}' ) )
-ENVIRONMENT_SETUP = """
-{{ config.ENVIRONMENT_SETUP }}
-"""
+ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 
 MAX_FILESIZE = 10 * 1024
 MAX_NUM_FILES = 1024
