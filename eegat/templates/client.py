@@ -72,7 +72,7 @@ def setenv():
 	comment = '# EEG environment setup'
 	to_append = comment + ENVIRONMENT_SETUP.format( EEG_HOME )
 	with open( profile, 'r' ) as f: tmp = f.read()
-	if tmp.find( comment ) !=  -1: return 'bash profile already modified'
+	if tmp.find( comment ) != -1: return 'bash profile already modified'
 	with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
 	return ''
 
