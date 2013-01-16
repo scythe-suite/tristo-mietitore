@@ -7,15 +7,17 @@ from hashlib import sha256
 from logging import StreamHandler, Formatter, INFO
 from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY
 from os.path import join, isdir, abspath, expanduser, expandvars, dirname
-from sys import argv
+from sys import argv, exit
 from tarfile import TarFile
 from time import time
 
 from flask import Flask, render_template, request
-from jinja2 import Environment
 
 app = Flask( __name__ )
-app.config.from_envvar( 'TM_SETTINGS' )
+try:
+	app.config.from_envvar( 'TM_SETTINGS' )
+except:
+	exit( 'Error loading TM_SETTINGS, is such variable defined?' )
 
 # setup logging
 if not app.debug:
@@ -113,6 +115,8 @@ def handle():
 			app.logger.exception( '' )
 			return _as_text( '# {0}\n'.format( _( 'An unexpected server error occurred!' ) ), 500 )
 
+def main():
+	app.run( host= '0.0.0.0', port = 8000, debug = len( argv ) == 1 )
 
 if __name__ == '__main__':
-	app.run( host= '0.0.0.0', port = 8000, debug = len( argv ) == 1 )
+	main()

@@ -7,5 +7,8 @@ execfile( join( dirname( __file__ ), 'templates', 'client.py' ), loc )
 sys.excepthook = _excepthook
 tar = loc[ 'tar' ]
 
-if __name__ == '__main__':
+def main():
 	print tar( *sys.argv[ 1: ] )
+
+if __name__ == '__main__':
+	main()

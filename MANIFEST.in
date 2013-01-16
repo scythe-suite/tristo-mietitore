@@ -1,0 +1,2 @@
+recursive-include tm *.py
+recursive-include tm *.mo
