@@ -95,6 +95,3 @@ def handle():
 		else:
 			app.logger.exception( '' )
 			return '# An unexpected error occurred!"\n', 500, { 'Content-Type': 'text/plain' }
-
-if __name__ == '__main__':
-	app.run( host= '0.0.0.0', port = 8000, debug = False )

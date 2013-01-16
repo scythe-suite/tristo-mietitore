@@ -1,4 +1,5 @@
 #!/bin/bash
 
+export PYTHONPATH=.
 export EEGNG_SETTINGS=$(pwd)/conf.py
-python eegat/__init__.py
+python -m eegat $1
