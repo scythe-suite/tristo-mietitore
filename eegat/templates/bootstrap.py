@@ -8,20 +8,14 @@
 #	sign UID
 #
 
-import sys
-def _excepthook( t, v, tb ):
-		tb = extract_tb( tb )[ -1 ]
-		f = tb[ 0 ].split( '/' )[ -1 ]
-		l = tb[ 1 ]
-		e = format_exception_only( t, v )[ -1 ].strip()
-		sys.exit( '[{0}:{1}] {2}'.format( f, l, e ) )
-sys.excepthook = _excepthook
+# {% if not config.DEBUG %}
+import sys; sys.excepthook = lambda t, v, tb: sys.exit( 'An unexpected error occurred!' )
+# {% endif %}
 
 from base64 import decodestring
 from os import chmod
 from os.path import join, expandvars, expanduser
 from subprocess import check_output
-from traceback import extract_tb, format_exception_only
 
 client = decodestring( """
 {{ client }}""" )
