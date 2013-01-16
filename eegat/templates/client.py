@@ -29,29 +29,25 @@ def tar( dir = '.', glob = '.*', verbose = True ):
 	dir = abspath( dir )
 	glob = recompile( glob )
 	buf = BytesIO()
-	tf = TarFile.open( mode = 'w', fileobj = buf )
-	offset = len( dir ) + 1
-	num_files = 0
-	for base, dirs, files in walk( dir, followlinks = True ):
-		if num_files > MAX_NUM_FILES: break
-		for fpath in files:
-			path = join( base, fpath )
-			rpath = path[ offset: ]
-			if glob.search( rpath ) and stat( path ).st_size < MAX_FILESIZE:
-				num_files += 1
-				if num_files > MAX_NUM_FILES: break
-				if verbose: sys.stderr.write( rpath + '\n' )
-				with open( path, 'r' ) as f:
-					ti = tf.gettarinfo( arcname = rpath, fileobj = f )
+	with TarFile.open( mode = 'w', fileobj = buf ) as tf:
+		offset = len( dir ) + 1
+		num_files = 0
+		for base, dirs, files in walk( dir, followlinks = True ):
+			if num_files > MAX_NUM_FILES: break
+			for fpath in files:
+				path = join( base, fpath )
+				rpath = path[ offset: ]
+				if glob.search( rpath ) and stat( path ).st_size < MAX_FILESIZE:
+					num_files += 1
+					if num_files > MAX_NUM_FILES: break
+					if verbose: sys.stderr.write( rpath + '\n' )
+					with open( path, 'r' ) as f: ti = tf.gettarinfo( arcname = rpath, fileobj = f )
 					tf.addfile( ti, fileobj = f )
-	tf.close()
 	return encodestring( buf.getvalue() )
 
 def untar( data, dir = '.' ):
 	f = BytesIO( decodestring( data ) )
-	tf = TarFile.open( mode = 'r', fileobj = f )
-	tf.extractall( dir )
-	tf.close()
+	with TarFile.open( mode = 'r', fileobj = f ) as tf: tf.extractall( dir )
 
 def upload_tar( glob = '.*', dir = '.' ):
 	conn = urlopen( BASE_URL, urlencode( {
