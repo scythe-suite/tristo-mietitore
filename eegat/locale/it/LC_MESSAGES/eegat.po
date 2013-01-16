@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-16 17:02+0100\n"
+"POT-Creation-Date: 2013-01-16 21:20+0100\n"
 "PO-Revision-Date: 2013-01-16 12:46+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: it <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr "Matricola già in uso per lo studente: {data}"
 msgid "UID not registered"
 msgstr "Matricola non registrata all'esame"
 
-#: eegat/templates/client.py:5
+#: eegat/templates/client.py:6
 msgid "An unexpected client error occurred!"
 msgstr "Si è verificato un errore inatteso del cliernt!"
 
