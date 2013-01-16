@@ -6,7 +6,7 @@
 # and then invoke it as:
 #
 #	sign UID
-#
+# {% if client %}
 
 # {% if not config.DEBUG %}
 import sys; sys.excepthook = lambda t, v, tb: sys.exit( 'An unexpected error occurred!' )
@@ -17,25 +17,29 @@ from os import chmod
 from os.path import join, expandvars, expanduser
 from subprocess import check_output
 
-client = decodestring( """
+DATA = '{{ data }}'
+ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
+CLIENT = decodestring( """
 {{ client }}""" )
 
-evnsetup = """{{ config.ENVIRONMENT_SETUP }}"""
+EEG_HOME = expandvars( expanduser( '{{ config.EEG_HOME }}' ) )
 
-if not client:
+print 'echo -n "Installing in {0} for \'{1}\'... ";'.format( EEG_HOME, DATA )
 
-	print 'echo "UID not registered"'
+dest = join( EEG_HOME, '.eeg' )
+with open( dest, 'w' ) as f: f.write( CLIENT )
+chmod( dest, 0700 )
+check_output( [ dest, 'se' ] )
+check_output( [ dest, 'dl' ] )
 
-else:
+print '; '.join( ( 'echo done.' + ENVIRONMENT_SETUP.format( EEG_HOME ) ).splitlines() )
 
-	EEG_HOME = expandvars( expanduser( '{{ config.EEG_HOME }}' ) )
+# {% elif data %}
 
-	print 'echo -n "Installing in {0}... ";'.format( EEG_HOME )
+print 'echo "UID already signed as \'{{ data }}\'"'
 
-	dest = join( EEG_HOME, '.eeg' )
-	with open( dest, 'w' ) as f: f.write( client )
-	chmod( dest, 0700 )
-	check_output( [ dest, 'se' ] )
-	check_output( [ dest, 'dl' ] )
+# {% else %}
 
-	print '; '.join( ( 'echo done.' + evnsetup.format( EEG_HOME ) ).splitlines() )
+print 'echo "UID not registered"'
+
+# {% endif %}

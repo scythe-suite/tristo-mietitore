@@ -10,13 +10,6 @@ from flask import Flask, render_template, request
 
 app = Flask( __name__ )
 app.config.from_envvar( 'EEGNG_SETTINGS' )
-_ru = app.config[ 'REGISTERED_UIDS' ]
-_rus = {}
-for l in _ru.splitlines():
-	if not l: continue
-	uid, data = l.strip().split( '\t' )
-	_rus[ uid ] = data
-app.config[ 'REGISTERED_UIDS' ] = _rus
 
 def sign( uid ):
 	return '{0}:{1}'.format( uid, mac( app.config[ 'SECRET_KEY' ], uid, sha256 ).hexdigest() )
@@ -63,4 +56,4 @@ def handle():
 		return app.config[ 'DOWNLOAD_BUNDLE' ], 200, { 'Content-Type': 'text/plain' }
 
 if __name__ == '__main__':
-	app.run( port = 8000 )
+	app.run( port = 8000, debug = True )
