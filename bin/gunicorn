@@ -6,7 +6,7 @@ if [ "$1" == "start" ]; then
 	rm -f ./var/gunicorn.*
 	touch ./var/gunicorn.errors
 	tail -n 0 -f ./var/gunicorn.errors & pid=$!
-	gunicorn -c ./etc/gunicorn.conf eegat:app
+	gunicorn -c ./etc/gunicorn.conf eegat.web:app
 	sleep 1
 	chmod go= ./var/gunicorn.*
 	kill $pid

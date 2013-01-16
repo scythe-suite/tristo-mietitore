@@ -21,10 +21,9 @@ BASE_URL = '{{ request.url_root }}'
 EEG_HOME = expandvars( expanduser( '{{ config.EEG_HOME }}' ) )
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 
-MAX_FILESIZE = 10 * 1024
-MAX_NUM_FILES = 1024
-
 def tar( dir = '.', glob = '.*', verbose = True ):
+	MAX_FILESIZE = 10 * 1024
+	MAX_NUM_FILES = 1024
 	if not isdir( dir ): raise ValueError( '{0} is not a directory'.format( dir ) )
 	dir = abspath( dir )
 	glob = recompile( glob )
@@ -41,8 +40,9 @@ def tar( dir = '.', glob = '.*', verbose = True ):
 					num_files += 1
 					if num_files > MAX_NUM_FILES: break
 					if verbose: sys.stderr.write( rpath + '\n' )
-					with open( path, 'r' ) as f: ti = tf.gettarinfo( arcname = rpath, fileobj = f )
-					tf.addfile( ti, fileobj = f )
+					with open( path, 'r' ) as f:
+						ti = tf.gettarinfo( arcname = rpath, fileobj = f )
+						tf.addfile( ti, fileobj = f )
 	return encodestring( buf.getvalue() )
 
 def untar( data, dir = '.' ):

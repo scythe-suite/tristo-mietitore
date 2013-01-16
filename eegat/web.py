@@ -7,6 +7,7 @@ from hashlib import sha256
 from logging import StreamHandler, Formatter, INFO
 from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY
 from os.path import join, isdir, abspath, expanduser, expandvars, dirname
+from sys import argv
 from tarfile import TarFile
 from time import time
 
@@ -111,3 +112,7 @@ def handle():
 		else:
 			app.logger.exception( '' )
 			return _as_text( '# {0}\n'.format( _( 'An unexpected server error occurred!' ) ), 500 )
+
+
+if __name__ == '__main__':
+	app.run( host= '0.0.0.0', port = 8000, debug = len( argv ) == 1 )
