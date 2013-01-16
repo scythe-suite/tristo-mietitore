@@ -2,4 +2,4 @@
 
 export PYTHONPATH=.
 export EEGNG_SETTINGS=$(pwd)/conf.py
-python -m eegat $1
+python -m eegat.web $1

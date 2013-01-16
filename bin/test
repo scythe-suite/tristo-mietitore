@@ -11,7 +11,7 @@ rm -rf /tmp/eeg_test
 mkdir -p /tmp/eeg_test/{home,uploads}
 
 killall python 2>/dev/null
-python -m eegat prod > /tmp/eeg_test/out 2> /tmp/eeg_test/err &
+python -m eegat.web prod > /tmp/eeg_test/out 2> /tmp/eeg_test/err &
 sleep 2
 
 echocol Successful sign
