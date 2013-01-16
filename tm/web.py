@@ -15,7 +15,7 @@ from flask import Flask, render_template, request
 from jinja2 import Environment
 
 app = Flask( __name__ )
-app.config.from_envvar( 'EEGNG_SETTINGS' )
+app.config.from_envvar( 'TM_SETTINGS' )
 
 # setup logging
 if not app.debug:
@@ -27,7 +27,7 @@ if not app.debug:
 app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
 
 # setup translation
-translations = translation( 'eegat', join( dirname( __file__ ), 'locale' ), languages = [ app.config[ 'LANG' ] ], fallback = True )
+translations = translation( 'tm', join( dirname( __file__ ), 'locale' ), languages = [ app.config[ 'LANG' ] ], fallback = True )
 _ = translations.gettext
 app.jinja_env.add_extension( 'jinja2.ext.i18n' )
 app.jinja_env.install_gettext_translations( translations )

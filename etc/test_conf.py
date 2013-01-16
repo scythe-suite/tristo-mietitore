@@ -2,9 +2,9 @@ SECRET_KEY = 'a very long secret'
 
 LANG = 'it'
 
-EEG_HOME = '/tmp/eeg_test/home'
+TM_HOME = '/tmp/tm_test/home'
 
-UPLOAD_DIR = '/tmp/eeg_test/uploads'
+UPLOAD_DIR = '/tmp/tm_test/uploads'
 
 REGISTERED_UIDS = { '1': 'First', 's': 'Second' }
 

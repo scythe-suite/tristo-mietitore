@@ -1,6 +1,6 @@
 #!/bin/bash
 
-package=eegat
+package=tm
 basedir=./$package/locale/it/LC_MESSAGES
 basename=$basedir/$package
 

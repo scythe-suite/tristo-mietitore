@@ -1,12 +1,12 @@
 #!/bin/bash
 
-export EEGNG_SETTINGS=$(pwd)/conf.py
+export TM_SETTINGS=$(pwd)/conf.py
 
 if [ "$1" == "start" ]; then
 	rm -f ./var/gunicorn.*
 	touch ./var/gunicorn.errors
 	tail -n 0 -f ./var/gunicorn.errors & pid=$!
-	gunicorn -c ./etc/gunicorn.conf eegat.web:app
+	gunicorn -c ./etc/gunicorn.conf tm.web:app
 	sleep 1
 	chmod go= ./var/gunicorn.*
 	kill $pid

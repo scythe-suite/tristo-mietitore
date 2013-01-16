@@ -18,7 +18,7 @@ from urllib2 import urlopen
 DATA = '{{ data }}'
 SIGNATURE = '{{ signature }}'
 BASE_URL = '{{ request.url_root }}'
-EEG_HOME = expandvars( expanduser( '{{ config.EEG_HOME }}' ) )
+TM_HOME = expandvars( expanduser( '{{ config.TM_HOME }}' ) )
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 
 def tar( dir = '.', glob = '.*', verbose = True ):
@@ -52,7 +52,7 @@ def untar( data, dir = '.' ):
 def upload_tar( glob = '.*', dir = '.' ):
 	conn = urlopen( BASE_URL, urlencode( {
 		'signature': SIGNATURE,
-		'tar': tar( join( EEG_HOME, dir ), glob, False )
+		'tar': tar( join( TM_HOME, dir ), glob, False )
 	} ) )
 	ret = conn.read()
 	conn.close()
@@ -60,14 +60,14 @@ def upload_tar( glob = '.*', dir = '.' ):
 
 def download_tar():
 	conn = urlopen( BASE_URL, urlencode( { 'signature': SIGNATURE } ) )
-	untar( conn.read(), EEG_HOME )
+	untar( conn.read(), TM_HOME )
 	conn.close()
 	return ''
 
 def setenv():
 	profile = expanduser( '~/.bash_profile' )
 	comment = '# EEG environment setup'
-	to_append = comment + ENVIRONMENT_SETUP.format( EEG_HOME )
+	to_append = comment + ENVIRONMENT_SETUP.format( TM_HOME )
 	with open( profile, 'r' ) as f: tmp = f.read()
 	if tmp.find( comment ) != -1: return 'bash profile already modified'
 	with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )

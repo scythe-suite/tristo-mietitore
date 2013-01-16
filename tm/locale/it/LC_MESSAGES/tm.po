@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-16 21:20+0100\n"
+"POT-Creation-Date: 2013-01-16 23:05+0100\n"
 "PO-Revision-Date: 2013-01-16 12:46+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: it <LL@li.org>\n"
@@ -18,35 +18,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 
-#: eegat/__init__.py:84
+#: tm/web.py:85
 msgid "An unexpected bootstrap error occurred!"
 msgstr "Si è verificato un errore inatteso di avvio!"
 
-#: eegat/__init__.py:97
+#: tm/web.py:98
 msgid "Invalid or absent signature!"
 msgstr "Firma mancante, o invalida!"
 
-#: eegat/__init__.py:113
+#: tm/web.py:114
 msgid "An unexpected server error occurred!"
 msgstr "Si è verificato un errore inatteso del server!"
 
-#: eegat/templates/bootstrap.py:16
+#: tm/templates/bootstrap.py:16
 msgid "An unexpected installation error occurred!"
 msgstr "Si è verificato un errore inatteso di installazione!"
 
-#: eegat/templates/bootstrap.py:36
-msgid "Installed in {eeg_home} for: {data}"
-msgstr "Effettuata installazione in {eeg_home} per: {data}"
+#: tm/templates/bootstrap.py:43
+msgid "Installed in {tm_home} for: {data}"
+msgstr "Effettuata installazione in {tm_home} per: {data}"
 
-#: eegat/templates/bootstrap.py:40
+#: tm/templates/bootstrap.py:47
 msgid "UID already signed as: {data}"
 msgstr "Matricola già in uso per lo studente: {data}"
 
-#: eegat/templates/bootstrap.py:44
+#: tm/templates/bootstrap.py:51
 msgid "UID not registered"
 msgstr "Matricola non registrata all'esame"
 
-#: eegat/templates/client.py:6
+#: tm/templates/client.py:6
 msgid "An unexpected client error occurred!"
 msgstr "Si è verificato un errore inatteso del cliernt!"
 

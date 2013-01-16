@@ -1,5 +1,5 @@
 #!/bin/bash
 
 export PYTHONPATH=.
-export EEGNG_SETTINGS=$(pwd)/conf.py
-python -m eegat.web $1
+export TM_SETTINGS=$(pwd)/conf.py
+python -m tm.web $1

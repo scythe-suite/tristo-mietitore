@@ -22,25 +22,25 @@ from os import chmod, makedirs
 from os.path import join, expandvars, expanduser, isdir
 from subprocess import check_output
 
-EEG_HOME = expandvars( expanduser( '{{ config.EEG_HOME }}' ) )
+TM_HOME = expandvars( expanduser( '{{ config.TM_HOME }}' ) )
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 DATA = '{{ data }}'
 CLIENT = decodestring( """
 {{ client }}""" )
 
 try:
-	makedirs( EEG_HOME )
+	makedirs( TM_HOME )
 except OSError as e:
-	if e.errno == EEXIST and isdir( EEG_HOME ): pass
-	else: raise RuntimeError( '{0} exists and is not a directory'.format( EEG_HOME ) )
+	if e.errno == EEXIST and isdir( TM_HOME ): pass
+	else: raise RuntimeError( '{0} exists and is not a directory'.format( TM_HOME ) )
 
-dest = join( EEG_HOME, '.eeg' )
+dest = join( TM_HOME, '.tm' )
 with open( dest, 'w' ) as f: f.write( CLIENT )
 chmod( dest, 0700 )
 check_output( [ dest, 'se' ] )
 check_output( [ dest, 'dl' ] )
 
-print '; '.join( [ echo( """{{ _( "Installed in {eeg_home} for: {data}" ) }}""".format( eeg_home = EEG_HOME, data = DATA ) ) ] + [ _ for _ in ENVIRONMENT_SETUP.format( EEG_HOME ).splitlines() if _ ] )
+print '; '.join( [ echo( """{{ _( "Installed in {tm_home} for: {data}" ) }}""".format( tm_home = TM_HOME, data = DATA ) ) ] + [ _ for _ in ENVIRONMENT_SETUP.format( TM_HOME ).splitlines() if _ ] )
 
 {% elif data %}
 
