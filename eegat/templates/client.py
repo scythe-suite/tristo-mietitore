@@ -89,6 +89,6 @@ if __name__ == '__main__':
 		res = dispatch[ verb ]( *sys.argv )
 		if res: print res
 	except KeyError:
-		sys.exit( 'wrong verb' )
+		sys.exit( 'Wrong verb' )
 	except IndexError:
-		sys.exit( 'wrong number of args' )
+		sys.exit( 'Wrong number of args' )
