@@ -68,9 +68,10 @@ def bootstrap( uid ):
 			app.logger.exception( '' )
 			return 'print \'echo "An unexpected error occurred!"\'\n', 200, { 'Content-Type': 'text/plain' }
 
-@app.route( '/', methods = [ 'POST' ] )
+@app.route( '/', methods = [ 'GET', 'POST' ] )
 def handle():
 	try:
+		if request.method == 'GET': return '', 200, { 'Content-Type': 'text/plain' }
 		try:
 			signature = request.form[ 'signature' ]
 		except KeyError:
