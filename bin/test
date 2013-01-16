@@ -1,113 +1,50 @@
 #!/bin/bash
 
-echocol() { echo -ne "\033[31m$@...\033[0m "; }
+assert() { echo -ne "\033[31m$1...\033[0m "; if [ "$2" == "$3" ]; then echo OK; else echo FAIL, "$2"; fi; }
 
 export PYTHONPATH=.
-export EEGNG_SETTINGS=$(pwd)/etc/test_conf.py
+export TM_SETTINGS=$(pwd)/etc/test_conf.py
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
 
-rm -rf /tmp/eeg_test
-mkdir -p /tmp/eeg_test
+rm -rf /tmp/tm_test
+mkdir -p /tmp/tm_test
 
 killall python 2>/dev/null
 
 if [ -z "$1" ]; then
-	python -m eegat.web prod > /tmp/eeg_test/out 2> /tmp/eeg_test/err &
+	python -m tm.web prod > /tmp/tm_test/out 2> /tmp/tm_test/err &
 else
-	python -m eegat.web &
+	python -m tm.web &
 fi
-
 sleep 2
 
-echocol Successful sign
+assert "Successful sign" "$(pg 1)" 'echo "Effettuata installazione in /tmp/tm_test/home per: First"; echo "TESTCONF"'
 
-if [ "$(pg 1)" == 'echo "Effettuata installazione in /tmp/eeg_test/home per: First"; echo "TESTCONF"' ]; then
-	echo OK
-else
-	echo FAIL
-fi
+rm -f /tmp/tm_test/home/TEST
+/tmp/tm_test/home/.tm dl
+assert "Download" "$(ls -1 /tmp/tm_test/home/TEST 2>&1)" "/tmp/tm_test/home/TEST"
 
-echocol Download
+assert "Repeated sign" "$(pg 1)" 'echo "Matricola già in uso per lo studente: First"'
 
-rm -f /tmp/eeg_test/home/TEST
-/tmp/eeg_test/home/.eeg dl
-if [ -r /tmp/eeg_test/home/TEST ]; then
-	echo OK
-else
-	echo FAIL
-fi
+assert "Not registered" "$(pg x)" "echo \"Matricola non registrata all'esame\""
 
-echocol Repeated sign
+assert "Upload" "$(/tmp/tm_test/home/.tm ul ^TEST)" "TEST"
 
-if [ "$(pg 1)" == 'echo "Matricola già in uso per lo studente: First"' ]; then
-	echo OK
-else
-	echo FAIL
-fi
+assert "Received upload" "$(tar -C /tmp -xvf /tmp/tm_test/uploads/1/*.tar TEST 2>&1)" "TEST"
 
-echocol Not registered
+perl -i -pe 's/49a4405aafe63df05202df08f8f75c9247b7168159c964f697ba6f974ae40588/boo/' /tmp/tm_test/home/.tm
+assert "Client error" "$(/tmp/tm_test/home/.tm ul ^TEST 2>&1)" "Si è verificato un errore inatteso del cliernt!"
 
-if [ "$(pg x)" == "echo \"Matricola non registrata all'esame\"" ]; then
-	echo OK
-else
-	echo FAIL
-fi
+touch /tmp/tm_test/uploads/s
+assert "Bootstrap failure" "$(pg s)" 'echo "Si è verificato un errore inatteso di avvio!"'
 
-echocol Upload
+rm -rf /tmp/tm_test/home /tmp/tm_test/uploads/s
+touch /tmp/tm_test/home
+assert "Installation failure" "$(pg s 2>&1)" 'Si è verificato un errore inatteso di installazione!'
 
-if [ "$(/tmp/eeg_test/home/.eeg ul ^TEST)" == "TEST" ]; then
-	if [ "$(tar xfv /tmp/eeg_test/uploads/1/*.tar TEST 2>&1)" == "TEST" ]; then
-		echo OK
-	else
-		echo FAIL
-	fi
-else
-	echo FAIL
-fi
+assert "Auth error" "$(curl -d signature=x -sL http://localhost:8000/)" '# Firma mancante, o invalida!'
 
-echocol Client error
-
-perl -i -pe 's/49a4405aafe63df05202df08f8f75c9247b7168159c964f697ba6f974ae40588/boo/' /tmp/eeg_test/home/.eeg
-if [ "$(/tmp/eeg_test/home/.eeg ul ^TEST 2>&1)" == "Si è verificato un errore inatteso del cliernt!" ]; then
-	echo OK
-else
-	echo FAIL
-fi
-
-echocol Bootstrap failure
-
-touch /tmp/eeg_test/uploads/s
-if [ "$(pg s)" == 'echo "Si è verificato un errore inatteso di avvio!"' ]; then
-	echo OK
-else
-	echo FAIL
-fi
-
-echocol Installation failure
-
-rm -rf /tmp/eeg_test/home /tmp/eeg_test/uploads/s
-touch /tmp/eeg_test/home
-if [ "$(pg s 2>&1)" == 'Si è verificato un errore inatteso di installazione!' ]; then
-	echo OK
-else
-	echo FAIL
-fi
-
-echocol Auth error
-
-if [ "$(curl -d signature=x -sL http://localhost:8000/)" == '# Firma mancante, o invalida!' ]; then
-	echo OK
-else
-	echo FAIL
-fi
-
-echocol Internal error
-
-if [ "$(curl -d signature='s:31aa7ab3db1f26dae9daf68f664c242d4c9adbcef36506c134c3eed4573f7bdc' -d tar='ERROR' -sL http://localhost:8000/)" == '# Si è verificato un errore inatteso del server!' ]; then
-	echo OK
-else
-	echo FAIL
-fi
+assert "Internal error" "$(curl -d signature='s:31aa7ab3db1f26dae9daf68f664c242d4c9adbcef36506c134c3eed4573f7bdc' -d tar='ERROR' -sL http://localhost:8000/)" '# Si è verificato un errore inatteso del server!'
 
 killall python 2>/dev/null
