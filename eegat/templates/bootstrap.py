@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # To use this bootstrap script define the following bash function
 #
@@ -6,11 +7,14 @@
 # and then invoke it as:
 #
 #	sign UID
-# {% if client %}
 
-# {% if not config.DEBUG %}
-import sys; sys.excepthook = lambda t, v, tb: sys.exit( 'An unexpected error occurred!' )
-# {% endif %}
+echo = lambda message: 'echo "{0}"'.format( message )
+
+{% if client %}
+
+{% if not config.DEBUG %}
+import sys; sys.excepthook = lambda t, v, tb: sys.exit( """{{ _( "An unexpected installation error occurred!" ) }}""" )
+{%- endif %}
 
 from base64 import decodestring
 from os import chmod
@@ -21,7 +25,7 @@ EEG_HOME = expandvars( expanduser( '{{ config.EEG_HOME }}' ) )
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 DATA = '{{ data }}'
 CLIENT = decodestring( """
-{{ client }}""" )
+{{ client }}""" )#.decode( 'utf8' )
 
 dest = join( EEG_HOME, '.eeg' )
 with open( dest, 'w' ) as f: f.write( CLIENT )
@@ -29,14 +33,14 @@ chmod( dest, 0700 )
 check_output( [ dest, 'se' ] )
 check_output( [ dest, 'dl' ] )
 
-print '; '.join( [ 'echo -n "Installed in {0} for \'{1}\'"'.format( EEG_HOME, DATA ) ] + [ _ for _ in ENVIRONMENT_SETUP.format( EEG_HOME ).splitlines() if _ ] )
+print '; '.join( [ echo( """{{ _( "Installed in {eeg_home} for: {data}" ) }}""".format( eeg_home = EEG_HOME, data = DATA ) ) ] + [ _ for _ in ENVIRONMENT_SETUP.format( EEG_HOME ).splitlines() if _ ] )
 
-# {% elif data %}
+{% elif data %}
 
-print 'echo "UID already signed as \'{{ data }}\'"'
+print echo( """{{ _( "UID already signed as: {data}" ) }}""".format( data = '{{ data }}' ) )
 
-# {% else %}
+{% else %}
 
-print 'echo "UID not registered"'
+print echo( """{{ _( "UID not registered" ) }}""" )
 
-# {% endif %}
+{%- endif -%}

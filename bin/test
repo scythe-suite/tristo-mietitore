@@ -1,0 +1,67 @@
+#!/bin/bash
+
+echocol() {
+        echo -ne "\033[31m"
+        echo "$@"
+        echo -ne "\033[0m"
+}
+
+export PYTHONPATH=.
+export EEGNG_SETTINGS=$(pwd)/etc/test_conf.py
+
+pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
+
+rm -rf /tmp/eeg_test
+mkdir -p /tmp/eeg_test/{home,uploads}
+
+killall python
+python -m eegat prod > /tmp/eeg_test/out 2> /tmp/eeg_test/err &
+sleep 2
+
+echocol Successful sign
+
+pg 1
+
+echocol Download
+
+rm -f /tmp/eeg_test/home/TEST
+/tmp/eeg_test/home/.eeg dl
+ls -1 /tmp/eeg_test/home/TEST
+
+echocol Repeated sign
+
+pg 1
+
+echocol Not registered
+
+pg x
+
+echocol Upload
+
+/tmp/eeg_test/home/.eeg ul ^TEST
+
+echocol Client error
+
+perl -i -pe 's/49a4405aafe63df05202df08f8f75c9247b7168159c964f697ba6f974ae40588/boo/' /tmp/eeg_test/home/.eeg
+/tmp/eeg_test/home/.eeg ul ^TEST
+
+echocol Bootstrap failure
+
+touch /tmp/eeg_test/uploads/s
+pg s
+
+echocol Installation failure
+
+rm /tmp/eeg_test/uploads/s
+rm -rf /tmp/eeg_test/home
+pg s
+
+echocol Auth error
+
+curl -d signature=x -sL http://localhost:8000/
+
+echocol Internal error
+
+curl -d signature='s:31aa7ab3db1f26dae9daf68f664c242d4c9adbcef36506c134c3eed4573f7bdc' -d tar='ERROR' -sL http://localhost:8000/
+
+killall python

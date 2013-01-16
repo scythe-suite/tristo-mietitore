@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sys
 # {% if not config.DEBUG %}
-sys.excepthook = lambda t, v, tb: sys.exit( 'An unexpected error occurred!' )
+sys.excepthook = lambda t, v, tb: sys.exit( '{{ _( "An unexpected client error occurred!" ) }}' )
 # {% endif %}
 
 from base64 import encodestring, decodestring

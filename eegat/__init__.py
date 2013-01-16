@@ -1,17 +1,22 @@
 from base64 import encodestring, decodestring
+from codecs import BOM_UTF8
 from errno import EEXIST
+from gettext import translation
 from hmac import new as mac
 from hashlib import sha256
 from logging import StreamHandler, Formatter, INFO
 from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY
-from os.path import join, isdir, abspath, expanduser, expandvars
+from os.path import join, isdir, abspath, expanduser, expandvars, dirname
 from tarfile import TarFile
 from time import time
 
 from flask import Flask, render_template, request
+from jinja2 import Environment
 
 app = Flask( __name__ )
 app.config.from_envvar( 'EEGNG_SETTINGS' )
+
+# setup logging
 if not app.debug:
 	sh = StreamHandler()
 	f = Formatter( '%(asctime)s [%(process)s] [%(levelname)s] Flask: %(name)s [in %(pathname)s:%(lineno)d] %(message)s', '%Y-%m-%d %H:%M:%S' )
@@ -20,8 +25,17 @@ if not app.debug:
 	app.logger.setLevel( INFO )
 app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
 
+# setup translation
+translations = translation( 'eegat', join( dirname( __file__ ), 'locale' ), languages = [ app.config[ 'LANG' ] ], fallback = True )
+_ = translations.gettext
+app.jinja_env.add_extension( 'jinja2.ext.i18n' )
+app.jinja_env.install_gettext_translations( translations )
+
 def _sign( uid ):
 	return '{0}:{1}'.format( uid, mac( app.config[ 'SECRET_KEY' ], uid, sha256 ).hexdigest() )
+
+def _as_text( msg = '', code = 200, headers = { 'Content-Type': 'text/plain;charset=UTF-8' } ):
+	return msg, code, headers
 
 def sign( uid ):
 	try:
@@ -49,6 +63,7 @@ def check( signature ):
 	else:
 		return _sign( uid ) == signature
 
+
 @app.route( '/<uid>' )
 def bootstrap( uid ):
 	try:
@@ -59,19 +74,19 @@ def bootstrap( uid ):
 			client = None
 		else:
 			signature = sign( uid )
-			client = encodestring( render_template( 'client.py', data = data, signature = signature ) ) if signature else None
-		return render_template( 'bootstrap.py', client = client, data = data ), 200, { 'Content-Type': 'text/plain' }
+			client = encodestring( render_template( 'client.py', data = data, signature = signature ).encode( 'utf8' ) ) if signature else None
+		return _as_text( render_template( 'bootstrap.py', client = client, data = data ) )
 	except:
 		if app.debug:
 			raise
 		else:
 			app.logger.exception( '' )
-			return 'print \'echo "An unexpected error occurred!"\'\n', 200, { 'Content-Type': 'text/plain' }
+			return _as_text( BOM_UTF8 + 'print \'echo "{0}"\'\n'.format( _( 'An unexpected bootstrap error occurred!' ) ) )
 
 @app.route( '/', methods = [ 'GET', 'POST' ] )
 def handle():
 	try:
-		if request.method == 'GET': return '', 200, { 'Content-Type': 'text/plain' }
+		if request.method == 'GET': return _as_text()
 		try:
 			signature = request.form[ 'signature' ]
 		except KeyError:
@@ -79,7 +94,7 @@ def handle():
 		else:
 			allowed = check( signature )
 			uid = signature.split( ':' )[ 0 ]
-		if not allowed: return '# Invalid or absent signature!\n', 401, { 'Content-Type': 'text/plain' }
+		if not allowed: return _as_text( '# {0}\n'.format( _( 'Invalid or absent signature!' ) ), 401 )
 		if 'tar' in request.form:  # this is an upload
 			data = decodestring( request.form[ 'tar' ] )
 			dest = join( app.config[ 'UPLOAD_DIR' ], uid, str( int( time() * 1000 ) ) + '.tar' )
@@ -87,12 +102,12 @@ def handle():
 			tf = TarFile.open( dest, mode = 'r' )
 			names = tf.getnames()
 			tf.close()
-			return '\n'.join( names ), 200, { 'Content-Type': 'text/plain' }
+			return _as_text( '\n'.join( names ) )
 		else:  # this is a download
-			return app.config[ 'DOWNLOAD_BUNDLE' ], 200, { 'Content-Type': 'text/plain' }
+			return _as_text( app.config[ 'DOWNLOAD_BUNDLE' ] )
 	except:
 		if app.debug:
 			raise
 		else:
 			app.logger.exception( '' )
-			return '# An unexpected error occurred!"\n', 500, { 'Content-Type': 'text/plain' }
+			return _as_text( '# {0}\n'.format( _( 'An unexpected server error occurred!' ) ), 500 )
