@@ -4,7 +4,7 @@ from hmac import new as mac
 from hashlib import sha256
 from logging import StreamHandler, Formatter, INFO
 from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY
-from os.path import join, isdir
+from os.path import join, isdir, abspath, expanduser, expandvars
 from tarfile import TarFile
 from time import time
 
@@ -14,10 +14,11 @@ app = Flask( __name__ )
 app.config.from_envvar( 'EEGNG_SETTINGS' )
 if not app.debug:
 	sh = StreamHandler()
-	f = Formatter( '%(asctime)s [%(process)s] [%(levelname)s] Flask: %(name)s [in %(pathname)s:%(lineno)d] %(message)s','%Y-%m-%d %H:%M:%S' )
+	f = Formatter( '%(asctime)s [%(process)s] [%(levelname)s] Flask: %(name)s [in %(pathname)s:%(lineno)d] %(message)s', '%Y-%m-%d %H:%M:%S' )
 	sh.setFormatter( f )
 	app.logger.addHandler( sh )
 	app.logger.setLevel( INFO )
+app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
 
 def _sign( uid ):
 	return '{0}:{1}'.format( uid, mac( app.config[ 'SECRET_KEY' ], uid, sha256 ).hexdigest() )
@@ -31,7 +32,7 @@ def sign( uid ):
 			if e.errno == EEXIST and isdir( dest_dir ): pass
 			else: raise RuntimeError( '{0} exists and is not a directory'.format( dest_dir ) )
 		fd = os_open( join( dest_dir, 'IP.txt' ), O_CREAT | O_EXCL | O_WRONLY, 0600 )
-	except OSError as e: # already signed
+	except OSError as e:  # already signed
 		if e.errno == EEXIST: signature = None
 		else: raise
 	else:
@@ -54,7 +55,7 @@ def bootstrap( uid ):
 		try:
 			data = app.config[ 'REGISTERED_UIDS' ][ uid ]
 		except KeyError:
-			data = None # not registered
+			data = None  # not registered
 			client = None
 		else:
 			signature = sign( uid )
@@ -78,7 +79,7 @@ def handle():
 			allowed = check( signature )
 			uid = signature.split( ':' )[ 0 ]
 		if not allowed: return '# Invalid or absent signature!\n', 401, { 'Content-Type': 'text/plain' }
-		if 'tar' in request.form: # this is an upload
+		if 'tar' in request.form:  # this is an upload
 			data = decodestring( request.form[ 'tar' ] )
 			dest = join( app.config[ 'UPLOAD_DIR' ], uid, str( int( time() * 1000 ) ) + '.tar' )
 			with open( dest, 'w' ) as f: f.write( data )
@@ -86,7 +87,7 @@ def handle():
 			names = tf.getnames()
 			tf.close()
 			return '\n'.join( names ), 200, { 'Content-Type': 'text/plain' }
-		else: # this is a download
+		else:  # this is a download
 			return app.config[ 'DOWNLOAD_BUNDLE' ], 200, { 'Content-Type': 'text/plain' }
 	except:
 		if app.debug:
