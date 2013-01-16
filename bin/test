@@ -8,10 +8,16 @@ export EEGNG_SETTINGS=$(pwd)/etc/test_conf.py
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
 
 rm -rf /tmp/eeg_test
-mkdir -p /tmp/eeg_test/{home,uploads}
+mkdir -p /tmp/eeg_test
 
 killall python 2>/dev/null
-python -m eegat.web prod > /tmp/eeg_test/out 2> /tmp/eeg_test/err &
+
+if [ -z "$1" ]; then
+	python -m eegat.web prod > /tmp/eeg_test/out 2> /tmp/eeg_test/err &
+else
+	python -m eegat.web &
+fi
+
 sleep 2
 
 echocol Successful sign
@@ -51,7 +57,11 @@ fi
 echocol Upload
 
 if [ "$(/tmp/eeg_test/home/.eeg ul ^TEST)" == "TEST" ]; then
-	echo OK
+	if [ "$(tar xfv /tmp/eeg_test/uploads/1/*.tar TEST 2>&1)" == "TEST" ]; then
+		echo OK
+	else
+		echo FAIL
+	fi
 else
 	echo FAIL
 fi
@@ -76,8 +86,8 @@ fi
 
 echocol Installation failure
 
-rm /tmp/eeg_test/uploads/s
-rm -rf /tmp/eeg_test/home
+rm -rf /tmp/eeg_test/home /tmp/eeg_test/uploads/s
+touch /tmp/eeg_test/home
 if [ "$(pg s 2>&1)" == 'Si è verificato un errore inatteso di installazione!' ]; then
 	echo OK
 else
