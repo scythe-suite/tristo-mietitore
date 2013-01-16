@@ -3,28 +3,28 @@
 export EEGNG_SETTINGS=$(pwd)/conf.py
 
 if [ "$1" == "start" ]; then
-	rm -f ./data/gunicorn.*
-	touch ./data/gunicorn.errors
-	tail -n 0 -f ./data/gunicorn.errors & pid=$!
+	rm -f ./var/gunicorn.*
+	touch ./var/gunicorn.errors
+	tail -n 0 -f ./var/gunicorn.errors & pid=$!
 	gunicorn -c ./etc/gunicorn.conf eegat:app
 	sleep 1
-	chmod go= ./data/gunicorn.*
+	chmod go= ./var/gunicorn.*
 	kill $pid
 elif [ "$1" == "status" ]; then
-	tail ./data/gunicorn.{errors,accesses}
+	tail ./var/gunicorn.{errors,accesses}
 elif [ "$1" == "reload" ]; then
-	if [ -r ./data/gunicorn.pid ]; then
-		tail -n 0 -f ./data/gunicorn.errors & pid=$!
-		kill -HUP $(cat ./data/gunicorn.pid)
+	if [ -r ./var/gunicorn.pid ]; then
+		tail -n 0 -f ./var/gunicorn.errors & pid=$!
+		kill -HUP $(cat ./var/gunicorn.pid)
 		sleep 1
 		kill $pid
 	else
 		echo 'no pidfile present'
 	fi
 else
-	if [ -r ./data/gunicorn.pid ]; then
-		tail -n 0 -f ./data/gunicorn.errors & pid=$!
-		kill $(cat ./data/gunicorn.pid)
+	if [ -r ./var/gunicorn.pid ]; then
+		tail -n 0 -f ./var/gunicorn.errors & pid=$!
+		kill $(cat ./var/gunicorn.pid)
 		sleep 1
 		kill $pid
 	else
