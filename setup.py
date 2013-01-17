@@ -12,7 +12,7 @@ setup(
 	install_requires = [ "Flask>=0.9", ],
 	entry_points = {
 		'console_scripts': [
-			'tm-tar = tm.tar:main',
+			'tm-mkconf = tm.mkconf:main',
 			'tm-debug = tm.web:main'
 			]
 		}

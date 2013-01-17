@@ -2,16 +2,22 @@
 
 assert() { echo -ne "\033[31m$1...\033[0m "; if [ "$2" == "$3" ]; then echo OK; else echo FAIL, "$2"; fi; }
 
+rm -rf /tmp/tm_test
+mkdir -p /tmp/tm_test
+export TM_SETTINGS=/tmp/test_conf.py
+
 export PYTHONPATH=.
-export TM_SETTINGS=$(pwd)/etc/test_conf.py
+
+# Prepare the configuration
+
+mkdir /tmp/tm_test/tar_dir
+touch /tmp/tm_test/tar_dir/TEST
+
+python -m tm.mkconf $TM_SETTINGS ./etc/test_conf.py /tmp/tm_test/tar_dir ./etc/test_uids.tsv
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
 
-rm -rf /tmp/tm_test
-mkdir -p /tmp/tm_test
-
 killall python 2>/dev/null
-
 if [ -z "$1" ]; then
 	python -m tm.web prod > /tmp/tm_test/out 2> /tmp/tm_test/err &
 else
