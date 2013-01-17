@@ -107,7 +107,7 @@ def handle():
 			tf.close()
 			return _as_text( '\n'.join( names ) )
 		else:  # this is a download
-			return _as_text( app.config[ 'DOWNLOAD_BUNDLE' ] )
+			return _as_text( app.config[ 'TAR_DATA' ] )
 	except:
 		if app.debug:
 			raise
