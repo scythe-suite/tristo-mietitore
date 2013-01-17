@@ -1,5 +1,11 @@
 #!/bin/bash
 
-export PYTHONPATH=.
-export TM_SETTINGS=$(pwd)/conf.py
-python -m tm.web $1
+export PYTHONPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+export TM_SETTINGS=$(pwd)/$1
+
+if [ ! -r "$TM_SETTINGS" ]; then
+	echo "Please specify a configuration file"
+	exit 1
+fi
+
+python -m tm.web $2
