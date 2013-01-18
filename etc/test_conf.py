@@ -8,4 +8,5 @@ UPLOAD_DIR = '/tmp/tm_test/uploads'
 
 ENVIRONMENT_SETUP = """
 echo "TESTCONF"
+echo ### tm_home ###
 """
