@@ -67,8 +67,6 @@ if __name__ == '__main__':
 	try:
 		_, verb = sys.argv.pop( 0 ), sys.argv.pop( 0 )
 		dispatch = {
-			'_t': tar,
-			'se': setenv,
 			'ul': upload_tar,
 			'dl': download_tar,
 			'id': lambda *args: SIGNATURE.split( ':' )[ 0 ]
