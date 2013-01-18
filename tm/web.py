@@ -4,7 +4,7 @@ from errno import EEXIST
 from gettext import translation
 from hmac import new as mac
 from hashlib import sha256
-from logging import StreamHandler, Formatter, INFO
+from logging import StreamHandler, FileHandler, Formatter, INFO, getLogger
 from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY
 from os.path import join, isdir, abspath, expanduser, expandvars, dirname
 from sys import argv, exit
@@ -13,6 +13,13 @@ from time import time
 
 from flask import Flask, render_template, request
 
+def safe_mkdirs( path ):
+	try:
+		makedirs( path )
+	except OSError as e:
+		if e.errno == EEXIST and isdir( path ): pass
+		else: raise RuntimeError( '{0} exists and is not a directory'.format( path ) )
+
 app = Flask( __name__ )
 try:
 	app.config.from_envvar( 'TM_SETTINGS' )
@@ -20,18 +27,30 @@ try:
 except:
 	exit( 'Error loading TM_SETTINGS, is such variable defined?' )
 
+# make UPLOAD_DIR resolved and absolute
+app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
+safe_mkdirs( app.config[ 'UPLOAD_DIR' ] )
+
 # setup logging
 if not app.debug:
 	sh = StreamHandler()
+	sh.setLevel( INFO )
 	f = Formatter( '%(asctime)s [%(process)s] [%(levelname)s] Flask: %(name)s [in %(pathname)s:%(lineno)d] %(message)s', '%Y-%m-%d %H:%M:%S' )
 	sh.setFormatter( f )
 	app.logger.addHandler( sh )
 	app.logger.setLevel( INFO )
 
+EVENTS_LOG = getLogger( 'EVENTS_LOG' )
+EVENTS_LOG.setLevel( INFO )
+fh = FileHandler( join( app.config[ 'UPLOAD_DIR' ], 'events.log' ) )
+fh.setLevel( INFO )
+f = Formatter( '%(asctime)s: %(message)s', '%Y-%m-%d %H:%M:%S' )
+fh.setFormatter( f )
+EVENTS_LOG.addHandler( fh )
+
+EVENTS_LOG.info( 'started' )
 app.logger.info( 'RELOADED' )
 
-# make UPLOAD_DIR resolved and absolute
-app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
 
 # setup translation
 translations = translation( 'tm', join( dirname( __file__ ), 'locale' ), languages = [ app.config[ 'LANG' ] ], fallback = True )
@@ -60,6 +79,7 @@ def sign( uid ):
 	else:
 		signature = _sign( uid )
 		write( fd, request.remote_addr + '\n' )
+		EVENTS_LOG.info( 'Signed: {0} from {1}'.format( uid, request.remote_addr ) )
 		close( fd )
 	return signature
 
