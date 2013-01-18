@@ -16,6 +16,7 @@ from flask import Flask, render_template, request
 app = Flask( __name__ )
 try:
 	app.config.from_envvar( 'TM_SETTINGS' )
+	app.logger
 except:
 	exit( 'Error loading TM_SETTINGS, is such variable defined?' )
 
@@ -26,6 +27,10 @@ if not app.debug:
 	sh.setFormatter( f )
 	app.logger.addHandler( sh )
 	app.logger.setLevel( INFO )
+
+app.logger.info( 'RELOADED' )
+
+# make UPLOAD_DIR resolved and absolute
 app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
 
 # setup translation

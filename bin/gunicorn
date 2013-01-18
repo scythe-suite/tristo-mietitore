@@ -1,33 +1,52 @@
 #!/bin/bash
 
-export TM_SETTINGS=$(pwd)/conf.py
+export BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+mkdir -p "$BASEDIR"/var
 
 if [ "$1" == "start" ]; then
-	rm -f ./var/gunicorn.*
-	touch ./var/gunicorn.errors
-	tail -n 0 -f ./var/gunicorn.errors & pid=$!
-	gunicorn -c ./etc/gunicorn.conf tm.web:app
+
+	export PYTHONPATH="$BASEDIR"
+	export TM_SETTINGS="$(pwd)/$2"
+	if [ ! -f "$TM_SETTINGS" ]; then
+		echo "Please specify a configuration file"
+		exit 1
+	fi
+	echo Staring gunicorn with configuration $TM_SETTINGS and code from $PYTHONPATH
+	rm -f "$BASEDIR"/var/gunicorn.*
+	touch "$BASEDIR"/var/gunicorn.errors
+	tail -n 0 -f "$BASEDIR"/var/gunicorn.errors & pid=$!
+	gunicorn -c "$BASEDIR"/etc/gunicorn.conf \
+		--access-logfile "$BASEDIR"/var/gunicorn.accesses \
+		--error-logfile "$BASEDIR"/var/gunicorn.errors \
+		--pid "$BASEDIR"/var/gunicorn.pid tm.web:app
+	chmod go= "$BASEDIR"/var/gunicorn.*
 	sleep 1
-	chmod go= ./var/gunicorn.*
 	kill $pid
-elif [ "$1" == "status" ]; then
-	tail ./var/gunicorn.{errors,accesses}
+
+elif [ "$1" == "tail" ]; then
+
+	tail -f "$BASEDIR"/var/gunicorn.{errors,accesses}
+
 elif [ "$1" == "reload" ]; then
-	if [ -r ./var/gunicorn.pid ]; then
-		tail -n 0 -f ./var/gunicorn.errors & pid=$!
-		kill -HUP $(cat ./var/gunicorn.pid)
+
+	if [ -r "$BASEDIR"/var/gunicorn.pid ]; then
+		tail -n 0 -f "$BASEDIR"/var/gunicorn.errors & pid=$!
+		kill -HUP $(cat "$BASEDIR"/var/gunicorn.pid)
 		sleep 1
 		kill $pid
 	else
 		echo 'no pidfile present'
 	fi
+
 else
-	if [ -r ./var/gunicorn.pid ]; then
-		tail -n 0 -f ./var/gunicorn.errors & pid=$!
-		kill $(cat ./var/gunicorn.pid)
+
+	if [ -r "$BASEDIR"/var/gunicorn.pid ]; then
+		tail -n 0 -f "$BASEDIR"/var/gunicorn.errors & pid=$!
+		kill $(cat "$BASEDIR"/var/gunicorn.pid)
 		sleep 1
 		kill $pid
 	else
 		echo 'no pidfile present'
 	fi
+
 fi
