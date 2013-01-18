@@ -37,7 +37,16 @@ except OSError as e:
 dest = join( TM_HOME, '.tm' )
 with open( dest, 'w' ) as f: f.write( CLIENT.replace( '### tm_home ###', TM_HOME ) )
 chmod( dest, 0700 )
-check_output( [ dest, 'se' ] )
+
+profile = expanduser( '~/.bash_profile' )
+comment = '# EEG environment setup'
+to_append = comment + ENVIRONMENT_SETUP
+with open( profile, 'r' ) as f: tmp = f.read()
+if tmp.find( comment ) != -1:
+	echo( """ _( "Warning: ~/.bash_profile already contains EEG environment setup" ) """ )
+else:
+	with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
+
 check_output( [ dest, 'dl' ] )
 
 print '; '.join( [ echo( """{{ _( "Installed in {tm_home} for: {data}" ) }}""".format( tm_home = TM_HOME, data = DATA ) ) ] + [ _ for _ in ENVIRONMENT_SETUP.format( TM_HOME ).splitlines() if _ ] )

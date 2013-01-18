@@ -64,15 +64,6 @@ def download_tar():
 	conn.close()
 	return ''
 
-def setenv():  # should move this back to the bootstrap script?
-	profile = expanduser( '~/.bash_profile' )
-	comment = '# EEG environment setup'
-	to_append = comment + ENVIRONMENT_SETUP.format( TM_HOME )
-	with open( profile, 'r' ) as f: tmp = f.read()
-	if tmp.find( comment ) != -1: return 'bash profile already modified'
-	with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
-	return ''
-
 if __name__ == '__main__':
 	try:
 		_, verb = sys.argv.pop( 0 ), sys.argv.pop( 0 )
