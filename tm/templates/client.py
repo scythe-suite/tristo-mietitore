@@ -9,17 +9,16 @@ sys.excepthook = lambda t, v, tb: sys.exit( '{{ _( "An unexpected client error o
 from base64 import encodestring, decodestring
 from io import BytesIO
 from os import walk, stat
-from os.path import join, abspath, isdir, expanduser
+from os.path import join, abspath, isdir
 from re import compile as recompile
 from tarfile import TarFile
 from urllib import urlencode
 from urllib2 import urlopen
 
-DATA = '{{ data }}'
-SIGNATURE = '{{ signature }}'
-BASE_URL = '{{ request.url_root }}'
-TM_HOME = '### tm_home ###'
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
+BASE_URL = """{{ request.url_root }}"""
+TM_HOME = """### tm_home ###"""
+SIGNATURE = """{{ signature }}"""
 
 def tar( dir = '.', glob = '.*', verbose = True ):
 	MAX_FILESIZE = 10 * 1024
@@ -72,7 +71,7 @@ if __name__ == '__main__':
 			'se': setenv,
 			'ul': upload_tar,
 			'dl': download_tar,
-			'id': lambda *args: ', '.join( [ SIGNATURE.split( ':' )[ 0 ], DATA ] )
+			'id': lambda *args: SIGNATURE.split( ':' )[ 0 ]
 		}
 		res = dispatch[ verb ]( *sys.argv )
 		if res: print res
