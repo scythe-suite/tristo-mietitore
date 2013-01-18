@@ -48,9 +48,7 @@ f = Formatter( '%(asctime)s: %(message)s', '%Y-%m-%d %H:%M:%S' )
 fh.setFormatter( f )
 EVENTS_LOG.addHandler( fh )
 
-EVENTS_LOG.info( 'started' )
-app.logger.info( 'RELOADED' )
-
+EVENTS_LOG.info( 'Start' )
 
 # setup translation
 translations = translation( 'tm', join( dirname( __file__ ), 'locale' ), languages = [ app.config[ 'LANG' ] ], fallback = True )
@@ -79,7 +77,6 @@ def sign( uid ):
 	else:
 		signature = _sign( uid )
 		write( fd, request.remote_addr + '\n' )
-		EVENTS_LOG.info( 'Signed: {0} from {1}'.format( uid, request.remote_addr ) )
 		close( fd )
 	return signature
 
@@ -103,6 +100,12 @@ def bootstrap( uid ):
 		else:
 			signature = sign( uid )
 			client = encodestring( render_template( 'client.py', data = data, signature = signature ).encode( 'utf8' ) ) if signature else None
+		if client:
+			EVENTS_LOG.info( 'Signed: {0}@{1}'.format( uid, request.remote_addr ) )
+		elif data:
+			EVENTS_LOG.info( 'Not signed (already done): {0}@{1}'.format( uid, request.remote_addr ) )
+		else:
+			EVENTS_LOG.info( 'Not signed (not registered): {0}@{1}'.format( uid, request.remote_addr ) )
 		return _as_text( render_template( 'bootstrap.py', client = client, data = data ) )
 	except:
 		if app.debug:
@@ -122,7 +125,9 @@ def handle():
 		else:
 			allowed = check( signature )
 			uid = signature.split( ':' )[ 0 ]
-		if not allowed: return _as_text( '# {0}\n'.format( _( 'Invalid or absent signature!' ) ), 401 )
+		if not allowed:
+			EVENTS_LOG.info( 'Unauthorized: {0}@{1}'.format( signature, request.remote_addr ) )
+			return _as_text( '# {0}\n'.format( _( 'Invalid or absent signature!' ) ), 401 )
 		if 'tar' in request.form:  # this is an upload
 			data = decodestring( request.form[ 'tar' ] )
 			dest = join( app.config[ 'UPLOAD_DIR' ], uid, str( int( time() * 1000 ) ) + '.tar' )
@@ -130,8 +135,10 @@ def handle():
 			tf = TarFile.open( dest, mode = 'r' )
 			names = tf.getnames()
 			tf.close()
+			EVENTS_LOG.info( 'Upload: {0}@{1}'.format( uid, request.remote_addr ) )
 			return _as_text( '\n'.join( names ) )
 		else:  # this is a download
+			EVENTS_LOG.info( 'Download: {0}@{1}'.format( uid, request.remote_addr ) )
 			return _as_text( app.config[ 'TAR_DATA' ] )
 	except:
 		if app.debug:
