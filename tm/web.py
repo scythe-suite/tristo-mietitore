@@ -42,7 +42,7 @@ if not app.debug:
 
 EVENTS_LOG = getLogger( 'EVENTS_LOG' )
 EVENTS_LOG.setLevel( INFO )
-fh = FileHandler( join( app.config[ 'UPLOAD_DIR' ], 'events.log' ) )
+fh = FileHandler( join( app.config[ 'UPLOAD_DIR' ], 'EVENTS.log' ) )
 fh.setLevel( INFO )
 f = Formatter( '%(asctime)s: %(message)s', '%Y-%m-%d %H:%M:%S' )
 fh.setFormatter( f )
@@ -62,7 +62,7 @@ def _sign( uid ):
 def _as_text( msg = '', code = 200, headers = { 'Content-Type': 'text/plain;charset=UTF-8' } ):
 	return msg, code, headers
 
-def sign( uid ):
+def sign( uid ):  # the first time it's called returns the signature, then None
 	try:
 		dest_dir = join( app.config[ 'UPLOAD_DIR' ], uid )
 		try:
@@ -80,13 +80,13 @@ def sign( uid ):
 		close( fd )
 	return signature
 
-def check( signature ):
+def extract_uid( signature ):  # returns none if the signature is invalid
 	try:
 		uid, check = signature.split( ':' )
 	except ValueError:
-		return False
+		return None
 	else:
-		return _sign( uid ) == signature
+		return uid if _sign( uid ) == signature else None
 
 
 @app.route( '/<uid>' )
@@ -100,7 +100,7 @@ def bootstrap( uid ):
 		else:
 			signature = sign( uid )
 			client = encodestring( render_template( 'client.py', data = data, signature = signature ).encode( 'utf8' ) ) if signature else None
-		if client:
+		if signature:
 			EVENTS_LOG.info( 'Signed: {0}@{1}'.format( uid, request.remote_addr ) )
 		elif data:
 			EVENTS_LOG.info( 'Not signed (already done): {0}@{1}'.format( uid, request.remote_addr ) )
@@ -121,11 +121,10 @@ def handle():
 		try:
 			signature = request.form[ 'signature' ]
 		except KeyError:
-			allowed = False
+			uid = None
 		else:
-			allowed = check( signature )
-			uid = signature.split( ':' )[ 0 ]
-		if not allowed:
+			uid = extract_uid( signature )
+		if not uid:
 			EVENTS_LOG.info( 'Unauthorized: {0}@{1}'.format( signature, request.remote_addr ) )
 			return _as_text( '# {0}\n'.format( _( 'Invalid or absent signature!' ) ), 401 )
 		if 'tar' in request.form:  # this is an upload
