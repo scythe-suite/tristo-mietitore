@@ -94,12 +94,12 @@ def bootstrap( uid ):
 	try:
 		try:
 			data = app.config[ 'REGISTERED_UIDS' ][ uid ]
-		except KeyError:
-			data = None  # not registered
-			client = None
+		except KeyError:  # not registered
+			data = None
+			signature = None
 		else:
 			signature = sign( uid )
-			client = encodestring( render_template( 'client.py', data = data, signature = signature ).encode( 'utf8' ) ) if signature else None
+		client = encodestring( render_template( 'client.py', data = data, signature = signature ).encode( 'utf8' ) ) if signature else None
 		if signature:
 			EVENTS_LOG.info( 'Signed: {0}@{1}'.format( uid, request.remote_addr ) )
 		elif data:
