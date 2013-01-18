@@ -9,7 +9,7 @@ sys.excepthook = lambda t, v, tb: sys.exit( '{{ _( "An unexpected client error o
 from base64 import encodestring, decodestring
 from io import BytesIO
 from os import walk, stat
-from os.path import join, abspath, isdir, expanduser, expandvars
+from os.path import join, abspath, isdir, expanduser
 from re import compile as recompile
 from tarfile import TarFile
 from urllib import urlencode
@@ -18,7 +18,7 @@ from urllib2 import urlopen
 DATA = '{{ data }}'
 SIGNATURE = '{{ signature }}'
 BASE_URL = '{{ request.url_root }}'
-TM_HOME = expandvars( expanduser( '{{ config.TM_HOME }}' ) )
+TM_HOME = '### tm_home ###'
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 
 def tar( dir = '.', glob = '.*', verbose = True ):
@@ -64,7 +64,7 @@ def download_tar():
 	conn.close()
 	return ''
 
-def setenv():
+def setenv():  # should move this back to the bootstrap script?
 	profile = expanduser( '~/.bash_profile' )
 	comment = '# EEG environment setup'
 	to_append = comment + ENVIRONMENT_SETUP.format( TM_HOME )

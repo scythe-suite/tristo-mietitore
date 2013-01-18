@@ -19,10 +19,10 @@ import sys; sys.excepthook = lambda t, v, tb: sys.exit( """{{ _( "An unexpected 
 from base64 import decodestring
 from errno import EEXIST
 from os import chmod, makedirs
-from os.path import join, expandvars, expanduser, isdir
+from os.path import join, expandvars, expanduser, isdir, abspath
 from subprocess import check_output
 
-TM_HOME = expandvars( expanduser( '{{ config.TM_HOME }}' ) )
+TM_HOME = abspath( expandvars( expanduser( '{{ config.TM_HOME }}' ) ) )
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 DATA = '{{ data }}'
 CLIENT = decodestring( """
@@ -35,7 +35,7 @@ except OSError as e:
 	else: raise RuntimeError( '{0} exists and is not a directory'.format( TM_HOME ) )
 
 dest = join( TM_HOME, '.tm' )
-with open( dest, 'w' ) as f: f.write( CLIENT )
+with open( dest, 'w' ) as f: f.write( CLIENT.replace( '### tm_home ###', TM_HOME ) )
 chmod( dest, 0700 )
 check_output( [ dest, 'se' ] )
 check_output( [ dest, 'dl' ] )
