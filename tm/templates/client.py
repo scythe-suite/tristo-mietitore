@@ -43,12 +43,14 @@ def tar( dir = '.', glob = '.*', verbose = True ):
 					if verbose: sys.stderr.write( rpath + '\n' )
 					with open( path, 'rb' ) as f:
 						ti = tf.gettarinfo( arcname = rpath, fileobj = f )
+						ti.mtime = 0
 						nonempty_dirs.add( dirname( path ) )
 						tf.addfile( ti, fileobj = f )
 		for path in nonempty_dirs:
 			rpath = path[ offset: ]
 			if not rpath: continue
 			ti = tf.gettarinfo( name = path, arcname = rpath )
+			ti.mtime = 0
 			tf.addfile( ti )
 	return encodestring( buf.getvalue() )
 

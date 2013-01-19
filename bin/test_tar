@@ -17,20 +17,19 @@ chmod -R u=rX,go= /tmp/tm_tar/base
 
 export PYTHONPATH=..
 
-echocol "Creation with permissions preservation"
-
+echocol "Creation with permissions preservation and date setting to epoch"
 if diff -b \
-	<(python -c 'from tm.mkconf import tar, lstar; lstar( tar( "/tmp/tm_tar/base", verbose = False ) )' |  awk '{print $1, $6}' | sort) \
+	<(python -c 'from tm.mkconf import tar, lstar; lstar( tar( "/tmp/tm_tar/base", verbose = False ) )' |  awk '{print $1, $4, $5, $6}' | sort) \
 	<(cat <<EOF
--r-------- one/a1
--r-------- one/b1
--r-------- three/a1
--r-------- three/b1
--r-------- two/a2
--r-------- two/b2
--r-x------ one/
--r-x------ three/
--r-x------ two/
+-r-------- 1970-01-01 01:00:00 one/a1
+-r-------- 1970-01-01 01:00:00 one/b1
+-r-------- 1970-01-01 01:00:00 three/a1
+-r-------- 1970-01-01 01:00:00 three/b1
+-r-------- 1970-01-01 01:00:00 two/a2
+-r-------- 1970-01-01 01:00:00 two/b2
+-r-x------ 1970-01-01 01:00:00 one/
+-r-x------ 1970-01-01 01:00:00 three/
+-r-x------ 1970-01-01 01:00:00 two/
 EOF
 ); then
 	echo OK
