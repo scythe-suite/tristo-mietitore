@@ -47,6 +47,7 @@ def tar( dir = '.', glob = '.*', verbose = True ):
 						tf.addfile( ti, fileobj = f )
 		for path in nonempty_dirs:
 			rpath = path[ offset: ]
+			if not rpath: continue
 			ti = tf.gettarinfo( name = path, arcname = rpath )
 			tf.addfile( ti )
 	return encodestring( buf.getvalue() )
