@@ -1,0 +1,87 @@
+#!/bin/bash
+
+echocol() { echo -ne "\033[31m$@...\033[0m "; }
+
+if [ -d /tmp/tm_tar ]; then
+	chmod -R u+rwX /tmp/tm_tar
+	rm -rf /tmp/tm_tar
+fi
+
+mkdir -p /tmp/tm_tar/base/{one,two}
+ln -s one /tmp/tm_tar/base/three
+echo one.a > /tmp/tm_tar/base/one/a1
+echo one.b > /tmp/tm_tar/base/one/b1
+echo two.a > /tmp/tm_tar/base/two/a2
+echo two.b > /tmp/tm_tar/base/two/b2
+chmod -R u=rX,go= /tmp/tm_tar/base
+
+export PYTHONPATH=..
+
+echocol "Creation with permissions preservation"
+
+if diff -b \
+	<(python -c 'from tm.mkconf import tar, lstar; lstar( tar( "/tmp/tm_tar/base", verbose = False ) )' |  awk '{print $1, $6}' | sort) \
+	<(cat <<EOF
+-r-------- one/a1
+-r-------- one/b1
+-r-------- three/a1
+-r-------- three/b1
+-r-------- two/a2
+-r-------- two/b2
+-r-x------ one/
+-r-x------ three/
+-r-x------ two/
+EOF
+); then
+	echo OK
+else
+	echo FAIL
+fi
+
+echocol "Extraction and dereferencing"
+python -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'
+if [ -h /tmp/tm_tar/extract/three ]; then
+	echo FAIL
+else
+	echo OK
+fi
+
+echocol "Re-extraction"
+if python -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'; then
+	echo OK
+else
+	echo FAIL
+fi
+
+echocol "Re-extraction after setting perms to 0000"
+find /tmp/tm_tar/extract -depth -exec chmod a= {} \;
+python -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'
+if diff -b <( find /tmp/tm_tar/extract | sort ) <( cat <<EOF
+/tmp/tm_tar/extract
+/tmp/tm_tar/extract/one
+/tmp/tm_tar/extract/one/a1
+/tmp/tm_tar/extract/one/b1
+/tmp/tm_tar/extract/three
+/tmp/tm_tar/extract/three/a1
+/tmp/tm_tar/extract/three/b1
+/tmp/tm_tar/extract/two
+/tmp/tm_tar/extract/two/a2
+/tmp/tm_tar/extract/two/b2
+EOF
+); then
+	echo OK
+else
+	echo FAIL
+fi
+
+echocol "Re-extraction after messing up with content and files"
+find /tmp/tm_tar/extract -depth -exec chmod u+rwX {} \;
+echo mess.a > /tmp/tm_tar/extract/one/a1
+echo mess.b > /tmp/tm_tar/extract/two/b2
+rm /tmp/tm_tar/extract/three/a1
+python -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'
+if diff -qr /tmp/tm_tar/extract /tmp/tm_tar/base; then
+	echo OK
+else
+	echo FAIL
+fi

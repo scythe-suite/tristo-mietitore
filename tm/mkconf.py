@@ -6,7 +6,8 @@ from os.path import join, dirname
 loc = {}
 execfile( join( dirname( __file__ ), 'templates', 'client.py' ), loc )
 sys.excepthook = _excepthook
-tar = loc[ 'tar' ]
+tar, untar, lstar = loc[ 'tar' ], loc[ 'untar' ], loc[ 'lstar' ]
+
 
 def main():
 
