@@ -83,7 +83,7 @@ def sign( uid ):
 		else: raise
 	else:
 		signature = _sign( uid )
-		write( fd, u'{0}\t{1}\t{2}\n'.format( uid, 'x', request.remote_addr ).encode( 'utf8' ) )
+		write( fd, u'{0}\t{1}\t{2}\n'.format( uid, data, request.remote_addr ).encode( 'utf8' ) )
 		close( fd )
 	return data, signature
 
