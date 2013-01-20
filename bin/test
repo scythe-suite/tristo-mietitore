@@ -29,13 +29,13 @@ assert "Successful sign (double quote, via bash)" "$(pg d | bash)" "*With \" dou
 
 assert "Successful sign (quote, match)" "$(pg a)" "*With ' quote*"
 
-assert "Successful sign (full check)" "$(pg 1)" 'echo "Effettuata installazione in /tmp/tm_test/home per: First"; echo "TESTCONF"; echo /tmp/tm_test/home'
+assert "Successful sign (full check)" "$(pg 1)" 'echo "Effettuata installazione in /tmp/tm_test/home per: Fròst"; echo "TESTCONF"; echo /tmp/tm_test/home'
 
 rm -f /tmp/tm_test/home/TEST
 /tmp/tm_test/home/.tm dl
 assert "Download" "$(ls -1 /tmp/tm_test/home/TEST 2>&1)" "/tmp/tm_test/home/TEST"
 
-assert "Repeated sign" "$(pg 1)" 'echo "Matricola già in uso per lo studente: First"'
+assert "Repeated sign" "$(pg 1)" 'echo "Matricola già in uso per lo studente: Fròst"'
 
 assert "Not registered" "$(pg x)" "echo \"Matricola non registrata all'esame\""
 
