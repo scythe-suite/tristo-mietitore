@@ -13,9 +13,9 @@ from time import time
 
 from flask import Flask, render_template, request
 
-def safe_mkdirs( path ):
+def safe_makedirs( path ):
 	try:
-		makedirs( path )
+		makedirs( path, 0700 )
 	except OSError as e:
 		if e.errno == EEXIST and isdir( path ): pass
 		else: raise RuntimeError( '{0} exists and is not a directory'.format( path ) )
@@ -29,7 +29,7 @@ except:
 
 # make UPLOAD_DIR resolved and absolute
 app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
-safe_mkdirs( app.config[ 'UPLOAD_DIR' ] )
+safe_makedirs( app.config[ 'UPLOAD_DIR' ] )
 
 # setup logging
 if not app.debug:
@@ -71,11 +71,7 @@ def sign( uid ):
 	except KeyError:
 		return None, None  # not registered
 	dest_dir = join( app.config[ 'UPLOAD_DIR' ], uid )
-	try:
-		makedirs( dest_dir )
-	except OSError as e:
-		if e.errno == EEXIST and isdir( dest_dir ): pass
-		else: raise RuntimeError( '{0} exists and is not a directory'.format( dest_dir ) )
+	safe_makedirs( dest_dir )
 	try:
 		fd = os_open( join( dest_dir, 'SIGNATURE.tsv' ), O_CREAT | O_EXCL | O_WRONLY, 0600 )
 	except OSError as e:

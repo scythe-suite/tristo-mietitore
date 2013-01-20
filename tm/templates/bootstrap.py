@@ -28,7 +28,7 @@ CLIENT = decodestring( """{{ client }}""" ).replace( '### tm_home ###', TM_HOME 
 DATA = """{{ data }}"""
 
 try:
-	makedirs( TM_HOME )
+	makedirs( TM_HOME, 0700 )
 except OSError as e:
 	if e.errno == EEXIST and isdir( TM_HOME ): pass
 	else: raise RuntimeError( '{0} exists and is not a directory'.format( TM_HOME ) )
