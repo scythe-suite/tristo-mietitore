@@ -62,25 +62,33 @@ def _sign( uid ):
 def _as_text( msg = '', code = 200, headers = { 'Content-Type': 'text/plain;charset=UTF-8' } ):
 	return msg, code, headers
 
-def sign( uid ):  # the first time it's called returns the signature, then None
+# if called with a registered UID, the first time it's called returns ( data,
+# signature ),then ( data, None ); if called with an unkniwn UID returns
+# ( None, None ) -- uses filesystem locking to be thread safe
+def sign( uid ):
 	try:
-		dest_dir = join( app.config[ 'UPLOAD_DIR' ], uid )
-		try:
-			makedirs( dest_dir )
-		except OSError as e:
-			if e.errno == EEXIST and isdir( dest_dir ): pass
-			else: raise RuntimeError( '{0} exists and is not a directory'.format( dest_dir ) )
-		fd = os_open( join( dest_dir, 'IP.txt' ), O_CREAT | O_EXCL | O_WRONLY, 0600 )
-	except OSError as e:  # already signed
-		if e.errno == EEXIST: signature = None
+		data = app.config[ 'REGISTERED_UIDS' ][ uid ]
+	except KeyError:
+		return None, None  # not registered
+	dest_dir = join( app.config[ 'UPLOAD_DIR' ], uid )
+	try:
+		makedirs( dest_dir )
+	except OSError as e:
+		if e.errno == EEXIST and isdir( dest_dir ): pass
+		else: raise RuntimeError( '{0} exists and is not a directory'.format( dest_dir ) )
+	try:
+		fd = os_open( join( dest_dir, 'SIGNATURE.tsv' ), O_CREAT | O_EXCL | O_WRONLY, 0600 )
+	except OSError as e:
+		if e.errno == EEXIST: return data, None  # already signed
 		else: raise
 	else:
 		signature = _sign( uid )
-		write( fd, request.remote_addr + '\n' )
+		write( fd, u'{0}\t{1}\t{2}\n'.format( uid, 'x', request.remote_addr ).encode( 'utf8' ) )
 		close( fd )
-	return signature
+	return data, signature
 
-def extract_uid( signature ):  # returns none if the signature is invalid
+# returns None if the signature is malformed, or invalid
+def extract_uid( signature ):
 	try:
 		uid, check = signature.split( ':' )
 	except ValueError:
@@ -92,13 +100,7 @@ def extract_uid( signature ):  # returns none if the signature is invalid
 @app.route( '/<uid>' )
 def bootstrap( uid ):
 	try:
-		try:
-			data = app.config[ 'REGISTERED_UIDS' ][ uid ]
-		except KeyError:  # not registered
-			data = None
-			signature = None
-		else:
-			signature = sign( uid )
+		data, signature = sign( uid )
 		client = encodestring( render_template( 'client.py', data = data, signature = signature ).encode( 'utf8' ) ) if signature else None
 		if signature:
 			EVENTS_LOG.info( 'Signed: {0}@{1}'.format( uid, request.remote_addr ) )
