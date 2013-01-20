@@ -4,7 +4,7 @@ assert() { echo -ne "\033[31m$1...\033[0m "; if [[ $2 == $3 ]]; then echo OK; el
 
 rm -rf /tmp/tm_test
 mkdir -p /tmp/tm_test
-export TM_SETTINGS=/tmp/test_conf.py
+export TM_SETTINGS=/tmp/tm_test/conf.py
 
 export PYTHONPATH=.
 
@@ -24,6 +24,7 @@ else
 	python -m tm.web &
 fi
 sleep 2
+
 
 assert "Successful sign (double quote, via bash)" "$(pg d | bash)" "*With \" double*"
 
