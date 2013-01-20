@@ -3,7 +3,7 @@
 
 import sys
 # {% if not config.DEBUG %}
-#sys.excepthook = lambda t, v, tb: sys.exit( '{{ _( "An unexpected client error occurred!" ) }}' )
+sys.excepthook = lambda t, v, tb: sys.exit( '{{ _( "An unexpected client error occurred!" ) }}' )
 # {% endif %}
 
 from base64 import encodestring, decodestring
@@ -43,7 +43,7 @@ def tar( dir = '.', glob = '.*', verbose = True ):
 					if verbose: sys.stderr.write( rpath + '\n' )
 					with open( path, 'rb' ) as f:
 						ti = tf.gettarinfo( arcname = rpath, fileobj = f )
-						ti.mtime = 0
+						ti.mtime = 1
 						nonempty_dirs.add( dirname( path ) )
 						tf.addfile( ti, fileobj = f )
 		for path in nonempty_dirs:
