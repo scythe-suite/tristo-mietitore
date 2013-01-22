@@ -18,7 +18,7 @@ from urllib2 import urlopen
 
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 BASE_URL = """{{ request.url_root }}"""
-TM_HOME = """### tm_home ###"""
+HOME = """### home ###"""
 SIGNATURE = """{{ signature }}"""
 DATA = """{{ data }}"""
 
@@ -88,7 +88,7 @@ def untar( data, dir = '.' ):
 def upload_tar( glob = '.*', dir = '.' ):
 	conn = urlopen( BASE_URL, urlencode( {
 		'signature': SIGNATURE,
-		'tar': tar( join( TM_HOME, dir ), glob, False )
+		'tar': tar( join( HOME, dir ), glob, False )
 	} ) )
 	ret = conn.read()
 	conn.close()
@@ -96,7 +96,7 @@ def upload_tar( glob = '.*', dir = '.' ):
 
 def download_tar():
 	conn = urlopen( BASE_URL, urlencode( { 'signature': SIGNATURE } ) )
-	untar( conn.read(), TM_HOME )
+	untar( conn.read(), HOME )
 	conn.close()
 	return ''
 
@@ -106,7 +106,6 @@ if __name__ == '__main__':
 		dispatch = {
 			'ul': upload_tar,
 			'dl': download_tar,
-			'id': lambda *args: SIGNATURE.split( ':' )[ 0 ]
 			'id': lambda *args: ' '.join( [ SIGNATURE.split( ':' )[ 0 ], DATA ] )
 		}
 		res = dispatch[ verb ]( *sys.argv )
