@@ -4,7 +4,7 @@
 trap 'echo wrapper killing $PID; kill -QUIT $PID' TERM
 
 # program to run
-gunicorn tm.web:app --error-logfile=- -w 3 -b 0.0.0.0:$PORT &
+gunicorn tm.web:app -w 3 -b 0.0.0.0:$PORT &
 
 # capture PID and wait
 PID=$!
