@@ -146,7 +146,7 @@ def handle():
 
 def main():
 	#app.run( host= '0.0.0.0', port = 8000, debug = len( argv ) == 1 )
-	app.run( debug = True )
+	app.run( debug = True, port = int( argv[ 1 ] ) )
 
 if __name__ == '__main__':
 	main()

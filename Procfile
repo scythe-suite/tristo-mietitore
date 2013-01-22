@@ -1,2 +1,2 @@
-web: python -m tm.web
+web: python -m tm.web $PORT
 
