@@ -1,0 +1,4 @@
+Flask>=0.9
+Jinja2>=2.6
+gevent>=0.13.8
+gunicorn>=0.17.0
