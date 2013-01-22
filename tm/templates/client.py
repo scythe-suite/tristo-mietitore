@@ -50,7 +50,7 @@ def tar( dir = '.', glob = '.*', verbose = True ):
 			rpath = path[ offset: ]
 			if not rpath: continue
 			ti = tf.gettarinfo( name = path, arcname = rpath )
-			ti.mtime = 0
+			ti.mtime = 1
 			tf.addfile( ti )
 	return encodestring( buf.getvalue() )
 
