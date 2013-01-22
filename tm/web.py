@@ -145,7 +145,8 @@ def handle():
 			return _as_text( '# {0}\n'.format( _( 'An unexpected server error occurred!' ) ), 500 )
 
 def main():
-	app.run( host= '0.0.0.0', port = 8000, debug = len( argv ) == 1 )
+	#app.run( host= '0.0.0.0', port = 8000, debug = len( argv ) == 1 )
+	app.run( debug = True )
 
 if __name__ == '__main__':
 	main()

@@ -1,2 +1,2 @@
-web: ./wrapper.sh
+web: python -m tm.web
 
