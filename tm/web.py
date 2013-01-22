@@ -123,7 +123,7 @@ def handle():
 		else:
 			uid = extract_uid( signature )
 		if not uid:
-			EVENTS_LOG.info( 'Unauthorized: {0}@{1}'.format( signature, request.remote_addr ) )
+			EVENTS_LOG.info( 'Unauthorized: {0}@{1}'.format( uid, request.remote_addr ) )
 			return _as_text( '# {0}\n'.format( _( 'Invalid or absent signature!' ) ), 401 )
 		if 'tar' in request.form:  # this is an upload
 			data = decodestring( request.form[ 'tar' ] )
@@ -145,7 +145,7 @@ def handle():
 			return _as_text( '# {0}\n'.format( _( 'An unexpected server error occurred!' ) ), 500 )
 
 def main():
-    app.run( host= '0.0.0.0', port = int( environ.get( 'PORT', 5000 ) ), debug = True )
+    app.run( host = '0.0.0.0', port = int( environ.get( 'PORT', 5000 ) ), debug = True )
 
 if __name__ == '__main__':
 	main()
