@@ -22,20 +22,20 @@ from os import chmod, makedirs
 from os.path import join, expandvars, expanduser, isdir, abspath
 from subprocess import check_output
 
-TM_HOME = abspath( expandvars( expanduser( """{{ config.TM_HOME }}""" ) ) )
-TM_CLIENT = abspath( expandvars( expanduser( """{{ config.TM_CLIENT }}""" ) ) )
-ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}""".replace( '### tm_home ###', TM_HOME )
-CLIENT = decodestring( """{{ client }}""" ).replace( '### tm_home ###', TM_HOME )
+HOME = abspath( expandvars( expanduser( """{{ config.HOME }}""" ) ) )
+CLIENT = abspath( expandvars( expanduser( """{{ config.CLIENT }}""" ) ) )
+ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}""".replace( '### home ###', HOME )
+CLIENT_DATA = decodestring( """{{ client }}""" ).replace( '### home ###', HOME )
 DATA = """{{ data }}"""
 
 try:
-	makedirs( TM_HOME, 0700 )
+	makedirs( HOME, 0700 )
 except OSError as e:
-	if e.errno == EEXIST and isdir( TM_HOME ): pass
-	else: raise RuntimeError( '{0} exists and is not a directory'.format( TM_HOME ) )
+	if e.errno == EEXIST and isdir( HOME ): pass
+	else: raise RuntimeError( '{0} exists and is not a directory'.format( HOME ) )
 
-with open( TM_CLIENT, 'w' ) as f: f.write( CLIENT )
-chmod( TM_CLIENT, 0700 )
+with open( CLIENT, 'w' ) as f: f.write( CLIENT_DATA )
+chmod( CLIENT, 0700 )
 
 if ENVIRONMENT_SETUP:
 	profile = expanduser( '~/.bash_profile' )
@@ -47,9 +47,9 @@ if ENVIRONMENT_SETUP:
 	else:
 		with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
 
-check_output( [ TM_CLIENT, 'dl' ] )
+check_output( [ CLIENT, 'dl' ] )
 
-echoes = [ echo( """{{ _( "Installed in {tm_home} for: {data}" ) }}""".format( tm_home = TM_HOME, data = DATA.replace( '"', r'\"' ) ) ) ]
+echoes = [ echo( """{{ _( "Installed in {home} for: {data}" ) }}""".format( home = HOME, data = DATA.replace( '"', r'\"' ) ) ) ]
 if ENVIRONMENT_SETUP: echoes.extend(  _ for _ in ENVIRONMENT_SETUP.splitlines() if _ )
 print '; '.join(  echoes  )
 

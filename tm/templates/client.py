@@ -20,6 +20,7 @@ ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 BASE_URL = """{{ request.url_root }}"""
 TM_HOME = """### tm_home ###"""
 SIGNATURE = """{{ signature }}"""
+DATA = """{{ data }}"""
 
 def tar( dir = '.', glob = '.*', verbose = True ):
 	MAX_FILESIZE = 10 * 1024
@@ -106,6 +107,7 @@ if __name__ == '__main__':
 			'ul': upload_tar,
 			'dl': download_tar,
 			'id': lambda *args: SIGNATURE.split( ':' )[ 0 ]
+			'id': lambda *args: ' '.join( [ SIGNATURE.split( ':' )[ 0 ], DATA ] )
 		}
 		res = dispatch[ verb ]( *sys.argv )
 		if res: print res

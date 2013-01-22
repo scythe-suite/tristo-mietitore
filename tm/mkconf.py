@@ -1,6 +1,6 @@
 import sys; _excepthook = sys.excepthook
 
-import argparse
+from argparse import ArgumentParser
 from os.path import join, dirname
 
 loc = {}
@@ -11,7 +11,7 @@ tar, untar, lstar = loc[ 'tar' ], loc[ 'untar' ], loc[ 'lstar' ]
 
 def main():
 
-	parser = argparse.ArgumentParser()
+	parser = ArgumentParser()
 	parser.add_argument( 'output_conf', help = 'The resulting configuration file' )
 	parser.add_argument( 'base_conf', help = 'The configuration file to start with' )
 	parser.add_argument( 'tar_dir', help = 'The directory to include as TAR_DATA' )

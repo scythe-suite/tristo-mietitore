@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-17 10:41+0100\n"
+"POT-Creation-Date: 2013-01-22 23:38+0100\n"
 "PO-Revision-Date: 2013-01-16 12:46+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: it <LL@li.org>\n"
@@ -18,15 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 
-#: tm/web.py:87
+#: tm/web.py:113
 msgid "An unexpected bootstrap error occurred!"
 msgstr "Si è verificato un errore inatteso di avvio!"
 
-#: tm/web.py:100
+#: tm/web.py:127
 msgid "Invalid or absent signature!"
 msgstr "Firma mancante, o invalida!"
 
-#: tm/web.py:116
+#: tm/web.py:145
 msgid "An unexpected server error occurred!"
 msgstr "Si è verificato un errore inatteso del server!"
 
@@ -34,15 +34,15 @@ msgstr "Si è verificato un errore inatteso del server!"
 msgid "An unexpected installation error occurred!"
 msgstr "Si è verificato un errore inatteso di installazione!"
 
-#: tm/templates/bootstrap.py:43
-msgid "Installed in {tm_home} for: {data}"
-msgstr "Effettuata installazione in {tm_home} per: {data}"
+#: tm/templates/bootstrap.py:52
+msgid "Installed in {home} for: {data}"
+msgstr "Effettuata installazione in {home} per: {data}"
 
-#: tm/templates/bootstrap.py:47
+#: tm/templates/bootstrap.py:58
 msgid "UID already signed as: {data}"
 msgstr "Matricola già in uso per lo studente: {data}"
 
-#: tm/templates/bootstrap.py:51
+#: tm/templates/bootstrap.py:62
 msgid "UID not registered"
 msgstr "Matricola non registrata all'esame"
 

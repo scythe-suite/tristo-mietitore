@@ -2,9 +2,9 @@ SECRET_KEY = 'a very long secret'
 
 LANG = 'it'
 
-TM_HOME = '$HOME'
+HOME = '$HOME'
 
-TM_CLIENT = '$HOME/tmclient'
+CLIENT = '$HOME/tmclient'
 
 UPLOAD_DIR = '/tmp/uploads'
 

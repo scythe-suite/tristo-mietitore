@@ -28,6 +28,7 @@ sleep 2
 
 assert "Successful sign (double quote, via bash)" "$(pg d | bash)" "*With \" double*"
 
+assert "Successful idenfity (double quote)" "$(/tmp/tm_test/home/tmclient id)" 'd With " double quote'
 assert "Successful sign (quote, match)" "$(pg a)" "*With ' quote*"
 
 assert "Successful sign (full check)" "$(pg 1)" 'echo "Effettuata installazione in /tmp/tm_test/home per: Fròst"; echo "TESTCONF"; echo /tmp/tm_test/home'
