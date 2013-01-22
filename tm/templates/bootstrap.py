@@ -20,7 +20,7 @@ from base64 import decodestring
 from errno import EEXIST
 from os import chmod, makedirs
 from os.path import join, expandvars, expanduser, isdir, abspath
-from subprocess import check_output
+from subprocess import call
 
 TM_HOME = abspath( expandvars( expanduser( """{{ config.TM_HOME }}""" ) ) )
 TM_CLIENT = abspath( expandvars( expanduser( """{{ config.TM_CLIENT }}""" ) ) )
@@ -46,7 +46,7 @@ if tmp.find( comment ) != -1:
 else:
 	with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
 
-check_output( [ TM_CLIENT, 'dl' ] )
+call( [ TM_CLIENT, 'dl' ] )
 
 print '; '.join( [ echo( """{{ _( "Installed in {tm_home} for: {data}" ) }}""".format( tm_home = TM_HOME, data = DATA.replace( '"', r'\"' ) ) ) ] + [ _ for _ in ENVIRONMENT_SETUP.splitlines() if _ ] )
 
