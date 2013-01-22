@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/bash -e
 
-assert() { echo -ne "\033[31m$1...\033[0m "; if [[ $2 == $3 ]]; then echo OK; else echo FAIL, "$2"; fi; }
+assert() { echo -ne "\033[31m$1...\033[0m "; if [[ $2 == $3 ]]; then echo OK; else echo FAIL, "$2"; exit 1; fi; }
 
 rm -rf /tmp/tm_test
 mkdir -p /tmp/tm_test
@@ -17,7 +17,7 @@ python -m tm.mkconf $TM_SETTINGS ./etc/test_conf.py /tmp/tm_test/tar_dir ./etc/t
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
 
-killall python 2>/dev/null
+killall python 2>/dev/null || true
 if [ -z "$1" ]; then
 	python -m tm.web prod > /tmp/tm_test/out 2> /tmp/tm_test/err &
 else
