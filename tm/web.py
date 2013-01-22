@@ -5,7 +5,7 @@ from gettext import translation
 from hmac import new as mac
 from hashlib import sha256
 from logging import StreamHandler, FileHandler, Formatter, INFO, getLogger
-from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY
+from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY, environ
 from os.path import join, isdir, abspath, expanduser, expandvars, dirname
 from sys import argv, exit
 from tarfile import TarFile
@@ -145,8 +145,7 @@ def handle():
 			return _as_text( '# {0}\n'.format( _( 'An unexpected server error occurred!' ) ), 500 )
 
 def main():
-	#app.run( host= '0.0.0.0', port = 8000, debug = len( argv ) == 1 )
-	app.run( debug = True, port = int( argv[ 1 ] ) )
+    app.run( host= '0.0.0.0', port = int( environ.get( 'PORT', 5000 ) ), debug = True )
 
 if __name__ == '__main__':
 	main()
