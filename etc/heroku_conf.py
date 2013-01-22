@@ -2,13 +2,14 @@ SECRET_KEY = 'a very long secret'
 
 LANG = 'it'
 
-TM_HOME = '/tmp/tm_test/home'
+TM_HOME = '$HOME'
 
-UPLOAD_DIR = '/tmp/tm_test/uploads'
+TM_CLIENT = '$HOME/tmclient'
+
+UPLOAD_DIR = '/tmp/uploads'
 
 ENVIRONMENT_SETUP = """
-echo "TESTCONF"
-echo ### tm_home ###
+echo "Messaggio di benvenuto"
 """
 
 TAR_DATA = """
