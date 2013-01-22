@@ -2,20 +2,21 @@
 
 assert() { echo -ne "\033[31m$1...\033[0m "; if [[ $2 == $3 ]]; then echo OK; else echo -e "FAIL:\n\t$2\n\t$3"; exit 1; fi; }
 
-rm -rf /tmp/tm_test
-mkdir -p /tmp/tm_test
-export TM_SETTINGS=/tmp/tm_test/conf.py
-
 export PYTHONPATH=.
 
 # Prepare the configuration
 
-mkdir /tmp/tm_test/tar_dir
+export TM_SETTINGS=/tmp/tm_test/conf.py
+
+rm -rf /tmp/tm_test
+mkdir -p /tmp/tm_test/tar_dir
 touch /tmp/tm_test/tar_dir/TEST
 
 python -m tm.mkconf $TM_SETTINGS ./test/conf.py /tmp/tm_test/tar_dir ./test/uids.tsv
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
+
+# Start the server (pre-kill all other python stuff: this is not safe!)
 
 killall python 2>/dev/null || true
 if [ -z "$1" ]; then
@@ -25,6 +26,7 @@ else
 fi
 sleep 2
 
+# Running tests...
 
 assert "Successful sign (double quote, via bash)" "$(pg d | bash)" "*With \" double*"
 
@@ -59,5 +61,7 @@ assert "Installation failure" "$(pg s 2>&1)" 'Si è verificato un errore inattes
 assert "Auth error" "$(curl -d signature=x -sL http://localhost:8000/)" '# Firma mancante, o invalida!'
 
 assert "Internal error" "$(curl -d signature='s:31aa7ab3db1f26dae9daf68f664c242d4c9adbcef36506c134c3eed4573f7bdc' -d tar='ERROR' -sL http://localhost:8000/)" '# Si è verificato un errore inatteso del server!'
+
+# Again, a very unsafe kill all!
 
 killall python 2>/dev/null
