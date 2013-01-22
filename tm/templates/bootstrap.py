@@ -20,7 +20,7 @@ from base64 import decodestring
 from errno import EEXIST
 from os import chmod, makedirs
 from os.path import join, expandvars, expanduser, isdir, abspath
-from subprocess import call
+from subprocess import check_output
 
 TM_HOME = abspath( expandvars( expanduser( """{{ config.TM_HOME }}""" ) ) )
 TM_CLIENT = abspath( expandvars( expanduser( """{{ config.TM_CLIENT }}""" ) ) )
@@ -37,18 +37,21 @@ except OSError as e:
 with open( TM_CLIENT, 'w' ) as f: f.write( CLIENT )
 chmod( TM_CLIENT, 0700 )
 
-profile = expanduser( '~/.bash_profile' )
-comment = '# EEG environment setup'
-to_append = comment + ENVIRONMENT_SETUP
-with open( profile, 'r' ) as f: tmp = f.read()
-if tmp.find( comment ) != -1:
-	echo( """ _( "Warning: ~/.bash_profile already contains EEG environment setup" ) """ )
-else:
-	with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
+if ENVIRONMENT_SETUP:
+	profile = expanduser( '~/.bash_profile' )
+	comment = '# EEG environment setup'
+	to_append = comment + ENVIRONMENT_SETUP
+	with open( profile, 'r' ) as f: tmp = f.read()
+	if tmp.find( comment ) != -1:
+		echo( """ _( "Warning: ~/.bash_profile already contains EEG environment setup" ) """ )
+	else:
+		with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
 
-call( [ TM_CLIENT, 'dl' ] )
+check_output( [ TM_CLIENT, 'dl' ] )
 
-print '; '.join( [ echo( """{{ _( "Installed in {tm_home} for: {data}" ) }}""".format( tm_home = TM_HOME, data = DATA.replace( '"', r'\"' ) ) ) ] + [ _ for _ in ENVIRONMENT_SETUP.splitlines() if _ ] )
+echoes = [ echo( """{{ _( "Installed in {tm_home} for: {data}" ) }}""".format( tm_home = TM_HOME, data = DATA.replace( '"', r'\"' ) ) ) ]
+if ENVIRONMENT_SETUP: echoes.extend(  _ for _ in ENVIRONMENT_SETUP.splitlines() if _ )
+print '; '.join(  echoes  )
 
 {% elif data %}
 
