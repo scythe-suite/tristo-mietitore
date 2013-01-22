@@ -133,7 +133,7 @@ def handle():
 			names = tf.getnames()
 			tf.close()
 			EVENTS_LOG.info( 'Upload: {0}@{1}'.format( uid, request.remote_addr ) )
-			return _as_text( '\n'.join( names ) )
+			return _as_text( '\n'.join( sorted( names ) ) )
 		else:  # this is a download
 			EVENTS_LOG.info( 'Download: {0}@{1}'.format( uid, request.remote_addr ) )
 			return _as_text( app.config[ 'TAR_DATA' ] )
