@@ -14,11 +14,10 @@ def main():
 	parser = ArgumentParser()
 	parser.add_argument( 'output_conf', help = 'The resulting configuration file' )
 	parser.add_argument( 'base_conf', help = 'The configuration file to start with' )
-	parser.add_argument( 'tar_dir', help = 'The directory to include as tar data' )
-	parser.add_argument( 'registerd_uids', help = 'A tab separated file of (uid, data) pairs to include as registered uids', nargs = '?' )
-	parser.add_argument( '--filter', '-f', default = '.*', help = 'A regular expression files to be included in tar data must match' )
-	parser.add_argument( '--tar_name', '-t', default = 'TAR_DATA', help = 'The name of the variable holding the tar data (default: TAR_DATA)' )
-	parser.add_argument( '--verbose', '-v', default = False, action='store_true', help = 'Whether to show the files added to tar data' )
+	parser.add_argument( 'tar_dir', help = 'The directory to include as TAR_DATA' )
+	parser.add_argument( 'registerd_uids', help = 'A tab separated file of (uid, data) pairs to include as REGISTERED_UIDS', nargs = '?' )
+	parser.add_argument( '--filter', '-f', default = '.*', help = 'A regular expression files to be included in TAR_DATA must match' )
+	parser.add_argument( '--verbose', '-v', default = False, action='store_true', help = 'Whether to show the files added to TAR_DATA' )
 
 	args = parser.parse_args()
 
@@ -34,7 +33,7 @@ def main():
 
 	with open( args.output_conf, 'w' ) as f:
 		f.write( base_conf + '\n' )
-		f.write( '{0} = """\n{1}"""\n'.format( args.tar_name, tar_data ) )
+		f.write( 'TAR_DATA = """\n' + tar_data + '"""\n' )
 		if registered_uids: f.write( '\nREGISTERED_UIDS = ' + repr( registered_uids ) + '\n' )
 
 if __name__ == '__main__':
