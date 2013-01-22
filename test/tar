@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 echocol() { echo -ne "\033[31m$@...\033[0m "; }
 

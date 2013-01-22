@@ -13,7 +13,7 @@ export PYTHONPATH=.
 mkdir /tmp/tm_test/tar_dir
 touch /tmp/tm_test/tar_dir/TEST
 
-python -m tm.mkconf $TM_SETTINGS ./etc/test_conf.py /tmp/tm_test/tar_dir ./etc/test_uids.tsv
+python -m tm.mkconf $TM_SETTINGS ./test/conf.py /tmp/tm_test/tar_dir ./test/uids.tsv
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
 
