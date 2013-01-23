@@ -12,7 +12,7 @@ rm -rf /tmp/tm_test
 mkdir -p /tmp/tm_test/tar_dir
 touch /tmp/tm_test/tar_dir/TEST
 
-python -m tm.mkconf $TM_SETTINGS ./test/conf.py /tmp/tm_test/tar_dir ./test/uids.tsv
+python -m tm.mkconf -b ./test/conf.py -u ./test/uids.tsv /tmp/tm_test/tar_dir $TM_SETTINGS
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
 
