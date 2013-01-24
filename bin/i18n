@@ -5,7 +5,7 @@ basedir=./$package/locale/it/LC_MESSAGES
 basename=$basedir/$package
 
 mkdir -p $basedir
-pybabel extract -F ./pybabel.cfg $package -o $basename.pot
+pybabel extract -F ./etc/pybabel.cfg $package -o $basename.pot
 pybabel update  -i $basename.pot -d ./$package/locale/ -l it -D $package
 pybabel compile -f -i $basename.po -d ./$package/locale/ -l it -D $package
 
