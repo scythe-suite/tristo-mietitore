@@ -1,4 +1,10 @@
-#!/bin/bash
+#!/bin/bash -e
 
-./test/server
-./test/tar
+echocol() { echo -e "\033[32m*** $@...\033[0m"; }
+
+tests="server tar"
+
+for t in $tests; do
+	echocol $t
+	./test/$t
+done

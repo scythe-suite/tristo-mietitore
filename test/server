@@ -1,6 +1,16 @@
 #!/bin/bash -e
 
-assert() { echo -ne "\033[31m$1...\033[0m "; if [[ $2 == $3 ]]; then echo OK; else echo -e "FAIL:\n\t$2\n\t$3"; exit 1; fi; }
+assert() {
+	echo -ne "\033[31m$1...\033[0m "
+	if [[ $2 == $3 ]]; then
+		echo OK
+	else
+		echo -e "FAIL:"
+		ecot "Actual: [$2]"
+		echo "Expected: [$3]"
+		exit 1
+	fi
+}
 
 export PYTHONPATH=.
 
