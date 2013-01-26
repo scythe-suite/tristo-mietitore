@@ -6,7 +6,7 @@ assert() {
 		echo OK
 	else
 		echo -e "FAIL:"
-		ecot "Actual: [$2]"
+		echo "Actual: [$2]"
 		echo "Expected: [$3]"
 		exit 1
 	fi
