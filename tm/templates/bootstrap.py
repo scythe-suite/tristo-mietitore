@@ -17,7 +17,7 @@ import sys; sys.excepthook = lambda t, v, tb: sys.exit( """{{ _( "An unexpected 
 {%- endif %}
 
 from base64 import decodestring
-from errno import EEXIST
+from errno import EEXIST, ENOENT
 from os import chmod, makedirs
 from os.path import join, expandvars, expanduser, isdir, abspath
 from subprocess import check_output
@@ -41,7 +41,12 @@ if ENVIRONMENT_SETUP:
 	profile = expanduser( '~/.bash_profile' )
 	comment = '# EEG environment setup'
 	to_append = comment + ENVIRONMENT_SETUP
-	with open( profile, 'r' ) as f: tmp = f.read()
+	try:
+		tmp = ''
+		with open( profile, 'r' ) as f: tmp = f.read()
+	except IOError as e:
+		if e.errno == ENOENT: pass
+		else: raise RuntimeError( 'Failed to read ~/.bash_profile' )
 	if tmp.find( comment ) != -1:
 		echo( """ _( "Warning: ~/.bash_profile already contains EEG environment setup" ) """ )
 	else:
