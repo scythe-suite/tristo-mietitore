@@ -1,6 +1,12 @@
 Tristo Mietitore
 ================
 
+.. |travis| image:: https://travis-ci.org/mapio/tristo-mietitore.png?branch=master
+  :alt: Travis Build Status
+  :target: https://travis-ci.org/mapio/tristo-mietitore
+
+|travis|
+
 Tristo Mietitore ("Grim Reaper") is a tool to distribute and collect practice
 and exam assignements.
 
