@@ -6,5 +6,5 @@ tests="server tar"
 
 for t in $tests; do
 	echocol $t
-	./test/$t 1
+	./test/$t
 done
