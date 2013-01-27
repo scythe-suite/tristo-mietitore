@@ -30,10 +30,25 @@ pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:
 
 killall python 2>/dev/null || true
 if [ -z "$1" ]; then
+	rm -f /tmp/tm_test/{out,err}
 	python -m tm.web prod > /tmp/tm_test/out 2> /tmp/tm_test/err &
+	echo -n "Waiting for server startup"
+	attempts=10
+	while [[ $attempts > 0 ]] && ! grep -q "Running on http" /tmp/tm_test/err; do
+		echo -n .
+		sleep 1
+		attempts=$(( $attempts - 1 ))
+	done
+	if [[ $attempts > 0 ]]; then
+		echo " started!"
+	else
+		echo " FAILED TO START!"
+		exit 1
+	fi
 else
-	python -m tm.web &
+	python -m tm.web & sleep 2
 fi
+
 sleep 2
 
 # Running tests...
