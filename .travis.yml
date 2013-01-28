@@ -1,10 +1,6 @@
 language: python
-python:
-  - "2.7"
-before_install:
-  - sudo apt-get install -y libevent-dev
-install:
-  - "pip install -r requirements.txt --use-mirrors"
-  - "pip install -r requirements-dev.txt --use-mirrors"
-before_script: "pybabel compile -f -i ./tm/locale/it/LC_MESSAGES/tm.po -d ./tm/locale/ -l it -D tm"
+python: "2.7"
+before_install: sudo apt-get install -y libevent-dev
+install: "pip install -r requirements-dev.txt --use-mirrors"
+before_script: "./bin/mkdist"
 script: ./test/doall

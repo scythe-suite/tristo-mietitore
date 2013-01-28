@@ -12,7 +12,7 @@ assert() {
 	fi
 }
 
-export PYTHONPATH=dist
+export PYTHONPATH=tm.zip
 
 # Prepare the configuration
 

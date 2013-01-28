@@ -2,3 +2,5 @@
 .*\.pot
 ^var$
 ^dist$
+^vendor$
+^tm.zip$

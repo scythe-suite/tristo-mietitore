@@ -1,8 +1,9 @@
 from argparse import ArgumentParser
-from os.path import join, dirname
+
+from pkg_resources import resource_string
 
 loc = {}
-execfile( join( dirname( __file__ ), 'templates', 'client.pyt' ), loc )
+exec resource_string( 'tm', 'templates/client.pyt' ) in loc
 tar, untar, lstar = loc[ 'tar' ], loc[ 'untar' ], loc[ 'lstar' ]
 
 def main():

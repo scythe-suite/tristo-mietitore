@@ -1,17 +1,19 @@
 from base64 import encodestring, decodestring
 from codecs import BOM_UTF8
 from errno import EEXIST
-from gettext import translation
 from hmac import new as mac
 from hashlib import sha256
 from logging import StreamHandler, FileHandler, Formatter, INFO, getLogger
 from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY, environ
-from os.path import join, isdir, abspath, expanduser, expandvars, dirname
+from os.path import join, isdir, abspath, expanduser, expandvars
 from sys import argv, exit
 from tarfile import TarFile
 from time import time
 
+from jinja2 import PackageLoader
 from flask import Flask, render_template, request
+
+from tm.zipgettext import translation
 
 def safe_makedirs( path ):
 	try:
@@ -26,6 +28,9 @@ try:
 	app.logger
 except:
 	exit( 'Error loading TM_SETTINGS, is such variable defined?' )
+
+# setup the loaded so that if finds the templates also in the zip file
+app.jinja_loader = PackageLoader( 'tm' )
 
 # make UPLOAD_DIR resolved and absolute
 app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
@@ -50,11 +55,13 @@ EVENTS_LOG.addHandler( fh )
 
 EVENTS_LOG.info( 'Start' )
 
+
 # setup translation
-translations = translation( 'tm', join( dirname( __file__ ), 'locale' ), languages = [ app.config[ 'LANG' ] ], fallback = True )
+translations = translation( app.config[ 'LANG' ] )
 _ = translations.gettext
 app.jinja_env.add_extension( 'jinja2.ext.i18n' )
 app.jinja_env.install_gettext_translations( translations )
+
 
 def _sign( uid ):
 	return '{0}:{1}'.format( uid, mac( app.config[ 'SECRET_KEY' ], uid, sha256 ).hexdigest() )
@@ -145,7 +152,7 @@ def handle():
 			return _as_text( '# {0}\n'.format( _( 'An unexpected server error occurred!' ) ), 500 )
 
 def main():
-    app.run( host = '0.0.0.0', port = int( environ.get( 'PORT', 8000 ) ), debug = len( argv ) == 1 )
+    app.run( host = '0.0.0.0', port = int( environ.get( 'PORT', 8000 ) ), debug = len( argv ) > 1 )
 
 if __name__ == '__main__':
 	main()
