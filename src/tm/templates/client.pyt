@@ -73,7 +73,7 @@ def untar( data, dir = '.' ):
 		for m in members:
 			if m.isdir(): dirs.append( m )
 			if m.isfile(): files.append( m )
-			dirs.sort( key = attrgetter( 'name' ) )
+		dirs.sort( key = attrgetter( 'name' ) )
 		for d in dirs:
 			dp = join( dir, d.name )
 			if not exists( dp ): mkdir( dp, 0700 )
