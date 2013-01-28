@@ -1,0 +1,13 @@
+#!/bin/bash
+
+rm -rf ./dist
+mkdir -p ./dist/locale
+
+cp -r ./src/tm ./dist
+python -m compileall ./dist
+find ./dist -name \*.py -exec rm {} \;
+for po in ./src/pos/*.po; do
+	bn=${po##*/}
+	mo=./dist/locale/${bn%.po}.mo
+	pybabel compile -f -i $po -o $mo
+done

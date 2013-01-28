@@ -3,7 +3,8 @@
 
 import sys
 # {% if not config.DEBUG %}
-sys.excepthook = lambda t, v, tb: sys.exit( '{{ _( "An unexpected client error occurred!" ) }}' )
+if __name__ == '__main__':
+	sys.excepthook = lambda t, v, tb: sys.exit( '{{ _( "An unexpected client error occurred!" ) }}' )
 # {% endif %}
 
 from base64 import encodestring, decodestring

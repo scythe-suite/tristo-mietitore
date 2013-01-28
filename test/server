@@ -12,7 +12,7 @@ assert() {
 	fi
 }
 
-export PYTHONPATH=.
+export PYTHONPATH=dist
 
 # Prepare the configuration
 

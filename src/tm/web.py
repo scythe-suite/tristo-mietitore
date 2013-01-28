@@ -97,14 +97,14 @@ def extract_uid( signature ):
 def bootstrap( uid ):
 	try:
 		data, signature = sign( uid )
-		client = encodestring( render_template( 'client.py', data = data, signature = signature ).encode( 'utf8' ) ) if signature else None
+		client = encodestring( render_template( 'client.pyt', data = data, signature = signature ).encode( 'utf8' ) ) if signature else None
 		if signature:
 			EVENTS_LOG.info( 'Signed: {0}@{1}'.format( uid, request.remote_addr ) )
 		elif data:
 			EVENTS_LOG.info( 'Not signed (already done): {0}@{1}'.format( uid, request.remote_addr ) )
 		else:
 			EVENTS_LOG.info( 'Not signed (not registered): {0}@{1}'.format( uid, request.remote_addr ) )
-		return _as_text( render_template( 'bootstrap.py', client = client, data = data ) )
+		return _as_text( render_template( 'bootstrap.pyt', client = client, data = data ) )
 	except:
 		if app.debug:
 			raise
