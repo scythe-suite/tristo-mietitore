@@ -1,6 +1,5 @@
 language: python
 python: "2.7"
-before_install: sudo apt-get install -y libevent-dev
 install: "pip install -r requirements-dev.txt --use-mirrors"
 before_script: "./bin/mkdist"
 script: ./test/doall
