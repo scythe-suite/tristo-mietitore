@@ -12,8 +12,6 @@ assert() {
 	fi
 }
 
-export PYTHONPATH=tm.zip
-
 # Prepare the configuration
 
 export TM_SETTINGS=/tmp/tm_test/conf.py
@@ -22,7 +20,7 @@ rm -rf /tmp/tm_test
 mkdir -p /tmp/tm_test/tar_dir
 touch /tmp/tm_test/tar_dir/TEST
 
-python -m tm.mkconf -b ./test/conf.py -u ./test/uids.tsv /tmp/tm_test/tar_dir $TM_SETTINGS
+python tm.zip mkconf -b ./test/conf.py -u ./test/uids.tsv /tmp/tm_test/tar_dir $TM_SETTINGS
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
 
@@ -30,7 +28,7 @@ pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:
 
 killall python 2>/dev/null || true
 rm -f /tmp/tm_test/{out,err}
-python -m tm.web > /tmp/tm_test/out 2> /tmp/tm_test/err &
+python tm.zip web > /tmp/tm_test/out 2> /tmp/tm_test/err &
 echo -n "Waiting for server startup"
 attempts=10
 while [[ $attempts > 0 ]] && ! grep -q "Running on http" /tmp/tm_test/err; do
