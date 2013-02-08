@@ -81,4 +81,4 @@ assert "Internal error" "$(curl -d signature='s:31aa7ab3db1f26dae9daf68f664c242d
 
 # Again, a very unsafe kill all!
 
-killall python 2>/dev/null
+killall python 2>/dev/null || true
