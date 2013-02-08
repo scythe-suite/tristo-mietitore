@@ -17,7 +17,7 @@ assert() {
 export TM_SETTINGS=/tmp/tm_test/conf.py
 
 rm -rf /tmp/tm_test
-mkdir -p /tmp/tm_test/tar_dir
+mkdir -p /tmp/tm_test/{tar_dir,untar_dir}
 touch /tmp/tm_test/tar_dir/TEST
 
 python tm.zip mkconf -b ./test/conf.py -u ./test/uids.tsv /tmp/tm_test/tar_dir $TM_SETTINGS
@@ -63,7 +63,7 @@ assert "Not registered" "$(pg x)" "echo \"Matricola non registrata all'esame\""
 
 assert "Upload" "$(/tmp/tm_test/home/tmclient ul ^TEST)" "TEST"
 
-assert "Received upload" "$(tar -C /tmp -xvf /tmp/tm_test/uploads/1/*.tar TEST 2>&1)" "TEST"
+assert "Received upload" "$(tar -C /tmp/tm_test/untar_dir -xvf /tmp/tm_test/uploads/1/*.tar TEST 2>&1)" "TEST"
 
 perl -i -pe 's/49a4405aafe63df05202df08f8f75c9247b7168159c964f697ba6f974ae40588/boo/' /tmp/tm_test/home/tmclient
 assert "Client auth error" "$(/tmp/tm_test/home/tmclient ul ^TEST 2>&1)" "Si è verificato un errore inatteso del cliernt!"

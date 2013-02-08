@@ -15,7 +15,7 @@ echo two.a > /tmp/tm_tar/base/two/a2
 echo two.b > /tmp/tm_tar/base/two/b2
 chmod -R u=rX,go= /tmp/tm_tar/base
 
-export PYTHONPATH=tm.zip
+export PYTHONPATH=./tm.zip
 
 echocol "Creation with permissions preservation and date setting to epoch"
 localdate=$(python -c 'import time; print "%d-%02d-%02d %02d:%02d:%02d" % time.localtime( 1 )[ :6 ]')
