@@ -13,21 +13,25 @@ mkdir -p ./dist
 mkdir -p ./vendor
 
 echocol "Vendorizing [begin]"
-if [ ! -d ./vendor/jinja2 ]; then
-	echocol "Getting jinja2"
-	curl -sL https://github.com/mitsuhiko/jinja2/tarball/2.6 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/jinja2'
-fi
-if [ ! -d ./vendor/werkzeug ]; then
-	echocol "Getting werkzeug"
-	curl -sL https://github.com/mitsuhiko/werkzeug/tarball/0.8.3 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
+if [ ! -r ./vendor/babel ]; then
+	echocol "Getting pybabel"
+	curl -sL http://ftp.edgewall.com/pub/babel/Babel-0.9.6.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel'
 fi
 if [ ! -d ./vendor/flask ]; then
 	echocol "Getting flask"
 	curl -sL https://github.com/mitsuhiko/flask/tarball/0.8 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/flask'
 fi
+if [ ! -d ./vendor/jinja2 ]; then
+	echocol "Getting jinja2"
+	curl -sL https://github.com/mitsuhiko/jinja2/tarball/2.6 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/jinja2'
+fi
 if [ ! -r ./vendor/pkg_resources.py ]; then
 	echocol "Getting pkg_resources"
 	curl -sL http://pypi.python.org/packages/source/s/setuptools/setuptools-0.6c11.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/pkg_resources.py'
+fi
+if [ ! -d ./vendor/werkzeug ]; then
+	echocol "Getting werkzeug"
+	curl -sL https://github.com/mitsuhiko/werkzeug/tarball/0.8.3 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
 fi
 echocol "Vendorizing [end]"
 
@@ -48,7 +52,7 @@ mkdir ./dist/tm/mos
 for po in ./src/pos/*.po; do
 	bn=${po##*/}
 	mo=./dist/tm/mos/${bn%.po}.mo
-	pybabel compile -f -i $po -o $mo 2>&1
+	PYTHONPATH=./vendor python vendor/babel/messages/frontend.py compile -f -i $po -o $mo 2>&1
 done
 
 echocol "Preparing zip file"
