@@ -8,8 +8,9 @@ fi
 
 echocol "Setup dirs"
 
-rm -rf ./dist
-mkdir -p ./dist
+tempdir=$(mktemp -d /tmp/tm-XXXXXXXXX) || exit 1
+
+mkdir -p $tempdir/dist
 mkdir -p ./vendor
 
 echocol "Vendorizing [begin]"
@@ -38,30 +39,28 @@ echocol "Vendorizing [end]"
 
 echocol "Copying source files to dist"
 
-cp -rv ./src/{tm,__main__.py} ./dist
-cp -rv ./vendor/* ./dist
+cp -rv ./src/{tm,__main__.py} $tempdir/dist
+cp -rv ./vendor/* $tempdir/dist
 
 echocol "Compiling and removing source files"
 
-python -m compileall ./dist
-find ./dist -name \*.py -exec rm {} \;
+python -m compileall $tempdir/dist
+find $tempdir/dist -name \*.py -exec rm {} \;
 
 echocol "Compiling language files"
 
-mkdir ./dist/tm/mos
+mkdir $tempdir/dist/tm/mos
 for po in ./src/pos/*.po; do
 	bn=${po##*/}
-	mo=./dist/tm/mos/${bn%.po}.mo
+	mo=$tempdir/dist/tm/mos/${bn%.po}.mo
 	PYTHONPATH=./vendor python vendor/babel/messages/frontend.py compile -f -i $po -o $mo 2>&1
 done
 
 echocol "Preparing zip file"
 
-rm -f tm.zip
-cd ./dist
-zip -9r ../tm.zip .
-cd ..
-echo '#!/usr/bin/env python' > ./bin/tm
-cat tm.zip >> ./bin/tm
-chmod u+rx ./bin/tm
-rm tm.zip
+( cd $tempdir/dist;  zip -9r $tempdir/tm.zip . )
+echo '#!/usr/bin/env python' > $(pwd)/bin/tm
+cat $tempdir/tm.zip >> $(pwd)/bin/tm
+chmod u+rx $(pwd)/bin/tm
+
+rm -rf $tempdir

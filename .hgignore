@@ -1,7 +1,6 @@
 .*\.mo
 .*\.pot
 ^var$
-^dist$
 ^vendor$
 ^tm.zip$
 ^bin/tm$
