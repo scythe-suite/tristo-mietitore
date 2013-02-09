@@ -26,18 +26,23 @@ pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:
 
 # Start the server (pre-kill all other python stuff: this is not safe!)
 
-killall python 2>/dev/null || true
-rm -f /tmp/tm_test/{out,err}
-./bin/tm web > /tmp/tm_test/out 2> /tmp/tm_test/err &
+killall -m '[Pp]ython' 2>/dev/null || true
+rm -f /tmp/tm_test/outerr
+if [ -z "$1" ]; then
+	./bin/tm web > /tmp/tm_test/outerr 2>&1 &
+else
+	./bin/gunicorn start $TM_SETTINGS > /tmp/tm_test/outerr 2>&1
+fi
+
 echo -n "Waiting for server startup"
 attempts=10
-while [[ $attempts > 0 ]] && ! grep -q "Running on http" /tmp/tm_test/err; do
+while [[ $attempts > 0 ]] && ! grep -qE "Running on http|Booting worker with pid" /tmp/tm_test/outerr; do
 	echo -n .
 	sleep 1
 	attempts=$(( $attempts - 1 ))
 done
 if [[ $attempts > 0 ]]; then
-	echo " started!"
+	echo ". started!"
 else
 	echo " FAILED TO START!"
 	exit 1
@@ -81,4 +86,4 @@ assert "Internal error" "$(curl -d signature='s:31aa7ab3db1f26dae9daf68f664c242d
 
 # Again, a very unsafe kill all!
 
-killall python 2>/dev/null || true
+killall -m '[Pp]ython' 2>/dev/null || true

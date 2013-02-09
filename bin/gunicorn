@@ -5,8 +5,8 @@ mkdir -p "$BASEDIR"/var
 
 if [ "$1" == "start" ]; then
 
-	export PYTHONPATH="$BASEDIR"
-	export TM_SETTINGS="$(pwd)/$2"
+	export PYTHONPATH="$BASEDIR/bin/tm"
+	export TM_SETTINGS="$2"
 	if [ ! -f "$TM_SETTINGS" ]; then
 		echo "Please specify a configuration file"
 		exit 1
