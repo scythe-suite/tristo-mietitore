@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-28 13:46+0100\n"
-"PO-Revision-Date: 2013-01-16 12:46+0100\n"
+"POT-Creation-Date: 2013-02-09 01:03+0100\n"
+"PO-Revision-Date: 2013-02-09 01:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: it <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -18,15 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 
-#: src/tm/web.py:113
+#: src/tm/web.py:121
 msgid "An unexpected bootstrap error occurred!"
 msgstr "Si è verificato un errore inatteso di avvio!"
 
-#: src/tm/web.py:127
+#: src/tm/web.py:135
 msgid "Invalid or absent signature!"
 msgstr "Firma mancante, o invalida!"
 
-#: src/tm/web.py:145
+#: src/tm/web.py:153
 msgid "An unexpected server error occurred!"
 msgstr "Si è verificato un errore inatteso del server!"
 
@@ -34,13 +34,18 @@ msgstr "Si è verificato un errore inatteso del server!"
 msgid "An unexpected installation error occurred!"
 msgstr "Si è verificato un errore inatteso di installazione!"
 
+#: src/tm/templates/bootstrap.pyt:51
+msgid "Warning: ~/.bash_profile already contains EEG environment setup"
+msgstr "Attenzione, l'ambiente di sistema è già stato aggiornato"
+
 #: src/tm/templates/bootstrap.pyt:57
-msgid "Installed in {home} for: {data}"
-msgstr "Effettuata installazione in {home} per: {data}"
+#, fuzzy
+msgid "Installed in {home} for: {info}"
+msgstr "Effettuata installazione in {home} per: {info}"
 
 #: src/tm/templates/bootstrap.pyt:63
-msgid "UID already signed as: {data}"
-msgstr "Matricola già in uso per lo studente: {data}"
+msgid "UID already signed as: {info}"
+msgstr "Matricola già in uso per lo studente: {info}"
 
 #: src/tm/templates/bootstrap.pyt:67
 msgid "UID not registered"

@@ -10,7 +10,7 @@
 
 echo = lambda message: 'echo "{0}"'.format( message )
 
-{% if client %}
+{% if client_code %}
 
 {% if not config.DEBUG %}
 import sys; sys.excepthook = lambda t, v, tb: sys.exit( """{{ _( "An unexpected installation error occurred!" ) }}""" )
@@ -23,10 +23,10 @@ from os.path import join, expandvars, expanduser, isdir, abspath
 from subprocess import check_output
 
 HOME = abspath( expandvars( expanduser( """{{ config.HOME }}""" ) ) )
-CLIENT = abspath( expandvars( expanduser( """{{ config.CLIENT }}""" ) ) )
+CLIENT_PATH = abspath( expandvars( expanduser( """{{ config.CLIENT_PATH }}""".replace( '### home ###', HOME ) ) ) )
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}""".replace( '### home ###', HOME )
-CLIENT_DATA = decodestring( """{{ client }}""" ).replace( '### home ###', HOME )
-DATA = """{{ data }}"""
+CLIENT_CODE = decodestring( """{{ client_code }}""" ).replace( '### home ###', HOME )
+INFO = """{{ info }}"""
 
 try:
 	makedirs( HOME, 0700 )
@@ -34,8 +34,8 @@ except OSError as e:
 	if e.errno == EEXIST and isdir( HOME ): pass
 	else: raise RuntimeError( '{0} exists and is not a directory'.format( HOME ) )
 
-with open( CLIENT, 'w' ) as f: f.write( CLIENT_DATA )
-chmod( CLIENT, 0700 )
+with open( CLIENT_PATH, 'w' ) as f: f.write( CLIENT_CODE )
+chmod( CLIENT_PATH, 0700 )
 
 if ENVIRONMENT_SETUP:
 	profile = expanduser( '~/.bash_profile' )
@@ -48,19 +48,19 @@ if ENVIRONMENT_SETUP:
 		if e.errno == ENOENT: pass
 		else: raise RuntimeError( 'Failed to read ~/.bash_profile' )
 	if tmp.find( comment ) != -1:
-		echo( """ _( "Warning: ~/.bash_profile already contains EEG environment setup" ) """ )
+		echo( """{{ _( "Warning: ~/.bash_profile already contains EEG environment setup" ) }}""" )
 	else:
 		with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
 
-check_output( [ CLIENT, 'dl' ] )
+check_output( [ CLIENT_PATH, 'dl' ] )
 
-echoes = [ echo( """{{ _( "Installed in {home} for: {data}" ) }}""".format( home = HOME, data = DATA.replace( '"', r'\"' ) ) ) ]
+echoes = [ echo( """{{ _( "Installed in {home} for: {info}" ) }}""".format( home = HOME, info = INFO.replace( '"', r'\"' ) ) ) ]
 if ENVIRONMENT_SETUP: echoes.extend(  _ for _ in ENVIRONMENT_SETUP.splitlines() if _ )
 print '; '.join(  echoes  )
 
-{% elif data %}
+{% elif info %}
 
-print echo( """{{ _( "UID already signed as: {data}" ) }}""".format( data = """{{ data }}""" ) )
+print echo( """{{ _( "UID already signed as: {info}" ) }}""".format( info = """{{ info }}""" ) )
 
 {% else %}
 

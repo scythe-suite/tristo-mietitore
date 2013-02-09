@@ -15,6 +15,7 @@ from flask import Flask, render_template, request
 
 from tm.zipgettext import translation
 
+
 def safe_makedirs( path ):
 	try:
 		makedirs( path, 0700 )
@@ -22,6 +23,7 @@ def safe_makedirs( path ):
 		if e.errno == EEXIST and isdir( path ): pass
 		else: raise RuntimeError( '{0} exists and is not a directory'.format( path ) )
 
+# get confs
 app = Flask( __name__ )
 try:
 	app.config.from_envvar( 'TM_SETTINGS' )
@@ -44,7 +46,6 @@ if not app.debug:
 	sh.setFormatter( f )
 	app.logger.addHandler( sh )
 	app.logger.setLevel( INFO )
-
 EVENTS_LOG = getLogger( 'EVENTS_LOG' )
 EVENTS_LOG.setLevel( INFO )
 fh = FileHandler( join( app.config[ 'UPLOAD_DIR' ], 'EVENTS.log' ) )
@@ -52,9 +53,7 @@ fh.setLevel( INFO )
 f = Formatter( '%(asctime)s: %(message)s', '%Y-%m-%d %H:%M:%S' )
 fh.setFormatter( f )
 EVENTS_LOG.addHandler( fh )
-
 EVENTS_LOG.info( 'Start' )
-
 
 # setup translation
 translations = translation( app.config[ 'LANG' ] )
@@ -69,12 +68,12 @@ def _sign( uid ):
 def _as_text( msg = '', code = 200, headers = { 'Content-Type': 'text/plain;charset=UTF-8' } ):
 	return msg, code, headers
 
-# if called with a registered UID, the first time it's called returns ( data,
-# signature ),then ( data, None ); if called with an unkniwn UID returns
+# if called with a registered UID, the first time it's called returns ( info,
+# signature ),then ( info, None ); if called with an unkniwn UID returns
 # ( None, None ) -- uses filesystem locking to be thread safe
 def sign( uid ):
 	try:
-		data = app.config[ 'REGISTERED_UIDS' ][ uid ]
+		info = app.config[ 'REGISTERED_UIDS' ][ uid ]
 	except KeyError:
 		return None, None  # not registered
 	dest_dir = join( app.config[ 'UPLOAD_DIR' ], uid )
@@ -82,13 +81,13 @@ def sign( uid ):
 	try:
 		fd = os_open( join( dest_dir, 'SIGNATURE.tsv' ), O_CREAT | O_EXCL | O_WRONLY, 0600 )
 	except OSError as e:
-		if e.errno == EEXIST: return data, None  # already signed
+		if e.errno == EEXIST: return info, None  # already signed
 		else: raise
 	else:
 		signature = _sign( uid )
-		write( fd, u'{0}\t{1}\t{2}\n'.format( uid, data, request.remote_addr ).encode( 'utf8' ) )
+		write( fd, u'{0}\t{1}\t{2}\n'.format( uid, info, request.remote_addr ).encode( 'utf8' ) )
 		close( fd )
-	return data, signature
+	return info, signature
 
 # returns None if the signature is malformed, or invalid
 def extract_uid( signature ):
@@ -103,15 +102,15 @@ def extract_uid( signature ):
 @app.route( '/<uid>' )
 def bootstrap( uid ):
 	try:
-		data, signature = sign( uid )
-		client = encodestring( render_template( 'client.pyt', data = data, signature = signature ).encode( 'utf8' ) ) if signature else None
+		info, signature = sign( uid )
+		client_code = encodestring( render_template( 'client.pyt', info = info, signature = signature ).encode( 'utf8' ) ) if signature else None
 		if signature:
 			EVENTS_LOG.info( 'Signed: {0}@{1}'.format( uid, request.remote_addr ) )
-		elif data:
+		elif info:
 			EVENTS_LOG.info( 'Not signed (already done): {0}@{1}'.format( uid, request.remote_addr ) )
 		else:
 			EVENTS_LOG.info( 'Not signed (not registered): {0}@{1}'.format( uid, request.remote_addr ) )
-		return _as_text( render_template( 'bootstrap.pyt', client = client, data = data ) )
+		return _as_text( render_template( 'bootstrap.pyt', client_code = client_code, info = info ) )
 	except:
 		if app.debug:
 			raise

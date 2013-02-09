@@ -4,7 +4,7 @@ LANG = 'it'
 
 HOME = '/tmp/tm_test/home'
 
-CLIENT = '/tmp/tm_test/home/tmclient'
+CLIENT_PATH = '### home ###/tmclient'
 
 UPLOAD_DIR = '/tmp/tm_test/uploads'
 
