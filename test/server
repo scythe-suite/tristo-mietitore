@@ -14,29 +14,29 @@ assert() {
 
 # Prepare the configuration
 
-export TM_SETTINGS=/tmp/tm_test/conf.py
+export TM_SETTINGS=/tmp/tm_server/conf.py
 
-rm -rf /tmp/tm_test
-mkdir -p /tmp/tm_test/{tar_dir,untar_dir}
-touch /tmp/tm_test/tar_dir/TEST
+rm -rf /tmp/tm_server
+mkdir -p /tmp/tm_server/{tar_dir,untar_dir}
+touch /tmp/tm_server/tar_dir/TEST
 
-./bin/tm mkconf -b ./test/conf.py -u ./test/uids.tsv /tmp/tm_test/tar_dir $TM_SETTINGS
+./bin/tm mkconf -b ./test/conf.py -u ./test/uids.tsv /tmp/tm_server/tar_dir $TM_SETTINGS
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
 
 # Start the server (pre-kill all other python stuff: this is not safe!)
 
 killall -m '[Pp]ython' 2>/dev/null || true
-rm -f /tmp/tm_test/outerr
+rm -f /tmp/tm_server/outerr
 if [ -z "$1" ]; then
-	./bin/tm web > /tmp/tm_test/outerr 2>&1 &
+	./bin/tm web > /tmp/tm_server/outerr 2>&1 &
 else
-	./bin/gunicorn start $TM_SETTINGS > /tmp/tm_test/outerr 2>&1
+	./bin/gunicorn start $TM_SETTINGS > /tmp/tm_server/outerr 2>&1
 fi
 
 echo -n "Waiting for server startup"
 attempts=10
-while [[ $attempts > 0 ]] && ! grep -qE "Running on http|Booting worker with pid" /tmp/tm_test/outerr; do
+while [[ $attempts > 0 ]] && ! grep -qE "Running on http|Booting worker with pid" /tmp/tm_server/outerr; do
 	echo -n .
 	sleep 1
 	attempts=$(( $attempts - 1 ))
@@ -52,32 +52,32 @@ fi
 
 assert "Successful sign (double quote, via bash)" "$(pg d | bash)" "*With \" double*"
 
-assert "Successful idenfity (double quote)" "$(/tmp/tm_test/home/tmclient id)" 'd With " double quote'
+assert "Successful idenfity (double quote)" "$(/tmp/tm_server/home/tmclient id)" 'd With " double quote'
 
 assert "Successful sign (quote, match)" "$(pg a)" "*With ' quote*"
 
-assert "Successful sign (full check)" "$(pg 1)" 'echo "Effettuata installazione in /tmp/tm_test/home per: Fròst"; echo "TESTCONF"; echo /tmp/tm_test/home'
+assert "Successful sign (full check)" "$(pg 1)" 'echo "Effettuata installazione in /tmp/tm_server/home per: Fròst"; echo "TESTCONF"; echo /tmp/tm_server/home'
 
-rm -f /tmp/tm_test/home/TEST
-/tmp/tm_test/home/tmclient dl
-assert "Download" "$(ls -1 /tmp/tm_test/home/TEST 2>&1)" "/tmp/tm_test/home/TEST"
+rm -f /tmp/tm_server/home/TEST
+/tmp/tm_server/home/tmclient dl
+assert "Download" "$(ls -1 /tmp/tm_server/home/TEST 2>&1)" "/tmp/tm_server/home/TEST"
 
 assert "Repeated sign" "$(pg 1)" 'echo "Matricola già in uso per lo studente: Fròst"'
 
 assert "Not registered" "$(pg x)" "echo \"Matricola non registrata all'esame\""
 
-assert "Upload" "$(/tmp/tm_test/home/tmclient ul ^TEST)" "TEST"
+assert "Upload" "$(/tmp/tm_server/home/tmclient ul ^TEST)" "TEST"
 
-assert "Received upload" "$(tar -C /tmp/tm_test/untar_dir -xvf /tmp/tm_test/uploads/1/*.tar TEST 2>&1)" "TEST"
+assert "Received upload" "$(tar -C /tmp/tm_server/untar_dir -xvf /tmp/tm_server/uploads/1/*.tar TEST 2>&1)" "TEST"
 
-perl -i -pe 's/49a4405aafe63df05202df08f8f75c9247b7168159c964f697ba6f974ae40588/boo/' /tmp/tm_test/home/tmclient
-assert "Client auth error" "$(/tmp/tm_test/home/tmclient ul ^TEST 2>&1)" "Si è verificato un errore inatteso del cliernt!"
+perl -i -pe 's/49a4405aafe63df05202df08f8f75c9247b7168159c964f697ba6f974ae40588/boo/' /tmp/tm_server/home/tmclient
+assert "Client auth error" "$(/tmp/tm_server/home/tmclient ul ^TEST 2>&1)" "Si è verificato un errore inatteso del cliernt!"
 
-touch /tmp/tm_test/uploads/s
+touch /tmp/tm_server/uploads/s
 assert "Bootstrap failure" "$(pg s)" 'echo "Si è verificato un errore inatteso di avvio!"'
 
-rm -rf /tmp/tm_test/home /tmp/tm_test/uploads/s
-touch /tmp/tm_test/home
+rm -rf /tmp/tm_server/home /tmp/tm_server/uploads/s
+touch /tmp/tm_server/home
 assert "Installation failure" "$(pg s 2>&1)" 'Si è verificato un errore inatteso di installazione!'
 
 assert "Auth error" "$(curl -d signature=x -sL http://localhost:8000/)" '# Firma mancante, o invalida!'
