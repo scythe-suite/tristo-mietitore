@@ -59,5 +59,9 @@ echocol "Preparing zip file"
 
 rm -f tm.zip
 cd ./dist
-zip -r ../tm.zip .
+zip -9r ../tm.zip .
 cd ..
+echo '#!/usr/bin/env python' > ./bin/tm
+cat tm.zip >> ./bin/tm
+chmod u+rx ./bin/tm
+rm tm.zip
