@@ -27,7 +27,6 @@ def safe_makedirs( path ):
 app = Flask( __name__ )
 try:
 	app.config.from_envvar( 'TM_SETTINGS' )
-	app.logger
 except:
 	exit( 'Error loading TM_SETTINGS, is such variable defined?' )
 
