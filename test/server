@@ -27,7 +27,6 @@ pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:
 # Start the server (pre-kill all other python stuff: this is not safe!)
 
 killall -m '[Pp]ython' 2>/dev/null || true
-rm -f /tmp/tm_server/outerr
 if [ -z "$1" ]; then
 	./bin/tm web > /tmp/tm_server/outerr 2>&1 &
 else
