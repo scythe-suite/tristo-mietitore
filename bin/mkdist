@@ -44,7 +44,7 @@ cp -rv ./vendor/* $tempdir/dist
 
 echocol "Compiling and removing source files"
 
-python -m compileall $tempdir/dist
+( cd $tempdir/dist; python -m compileall . )
 find $tempdir/dist -name \*.py -exec rm {} \;
 
 echocol "Compiling language files"
