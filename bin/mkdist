@@ -14,10 +14,6 @@ mkdir -p $tempdir/dist
 mkdir -p ./vendor
 
 echocol "Vendorizing [begin]"
-if [ ! -r ./vendor/babel ]; then
-	echocol "Getting pybabel"
-	curl -sL http://ftp.edgewall.com/pub/babel/Babel-0.9.6.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel'
-fi
 if [ ! -d ./vendor/flask ]; then
 	echocol "Getting flask"
 	curl -sL https://github.com/mitsuhiko/flask/tarball/0.8 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/flask'
@@ -29,6 +25,10 @@ fi
 if [ ! -r ./vendor/pkg_resources.py ]; then
 	echocol "Getting pkg_resources"
 	curl -sL http://pypi.python.org/packages/source/s/setuptools/setuptools-0.6c11.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/pkg_resources.py'
+fi
+if [ ! -r ./vendor/babel ]; then
+	echocol "Getting pybabel"
+	curl -sL http://ftp.edgewall.com/pub/babel/Babel-0.9.6.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel'
 fi
 if [ ! -d ./vendor/werkzeug ]; then
 	echocol "Getting werkzeug"
