@@ -16,11 +16,15 @@ mkdir -p ./vendor
 echocol "Vendorizing [begin]"
 if [ ! -d ./vendor/flask ]; then
 	echocol "Getting flask"
-	curl -sL https://github.com/mitsuhiko/flask/tarball/0.8 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/flask'
+	curl -sL https://github.com/mitsuhiko/flask/tarball/0.9 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/flask'
 fi
 if [ ! -d ./vendor/jinja2 ]; then
 	echocol "Getting jinja2"
-	curl -sL https://github.com/mitsuhiko/jinja2/tarball/2.6 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/jinja2'
+	curl -sL https://github.com/mitsuhiko/jinja2/tarball/2.7 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/jinja2'
+fi
+if [ ! -d ./vendor/markupsafe ]; then
+	echocol "Getting markupsafe"
+	curl -sL https://github.com/mitsuhiko/markupsafe/tarball/0.18 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/markupsafe'
 fi
 if [ ! -r ./vendor/pkg_resources.py ]; then
 	echocol "Getting pkg_resources"
