@@ -8,7 +8,7 @@ tar, untar, lstar = loc[ 'tar' ], loc[ 'untar' ], loc[ 'lstar' ]
 
 def main():
 
-	parser = ArgumentParser()
+	parser = ArgumentParser( prog = 'tm mkconf' )
 	parser.add_argument( 'tar_dir', help = 'The directory to include as TAR_DATA' )
 	parser.add_argument( '--base_conf', '-b', help = 'The configuration file to start with' )
 	parser.add_argument( '--registerd_uids', '-u', help = 'A tab separated file of (uid, data) pairs to include as REGISTERED_UIDS' )
