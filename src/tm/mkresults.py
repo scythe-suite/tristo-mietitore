@@ -1,10 +1,11 @@
+from argparse import ArgumentParser, REMAINDER, FileType
 from collections import namedtuple
 from json import dumps
 from logging import basicConfig, getLogger, DEBUG, INFO
-from re import compile as recompile
+from operator import itemgetter
 from os import walk
 from os.path import join, normpath
-from sys import argv
+from re import compile as recompile
 
 LOG_LEVEL = INFO
 basicConfig( format = '%(asctime)s %(levelname)s: %(funcName)s %(message)s', datefmt = '%Y-%m-%d %H:%M:%S', level = LOG_LEVEL )
@@ -12,8 +13,18 @@ LOGGER = getLogger( __name__ )
 
 PATTERN_KINDS = SIGNATURE, SOURCE, SOURCES, CASE, CASES = 'signature', 'source', 'sources', 'case', 'cases'
 
+class ScannerTracker( type ):
+	SCANNERS = []
+	def __new__( cls, name, bases, dct ):
+		new = super( ScannerTracker, cls).__new__( cls, name, bases, dct )
+		cls.SCANNERS.append( ( dct[ 'SHORT_NAME' ], new ) )
+		return new
+
 class FileSystemScanner( object ):
 
+	__metaclass__ = ScannerTracker
+
+	SHORT_NAME = 'fs'
 	SIGNATURE_PATTERN = None
 	SOURCE_PATTERN = None
 	SOURCES_PATTERN = None
@@ -127,6 +138,7 @@ class FileSystemScanner( object ):
 
 class OneExercisePerFileScanner( FileSystemScanner ):
 
+	SHORT_NAME = '1f'
 	SOURCE_PATTERN = r'(?P<uid>.*)/(?P<source>(?P<exercise>.*)\.{0})$'
 
 	def __init__( self, basedir, extension = None ):
@@ -137,6 +149,7 @@ class OneExercisePerFileScanner( FileSystemScanner ):
 
 class OneExercisePerDirectoryScanner( FileSystemScanner ):
 
+	SHORT_NAME = '1d'
 	SOURCE_PATTERN = r'(?P<uid>.*)/(?P<exercise>.*)/(?P<source>.*\.{0})$'
 
 	def __init__( self, basedir, extension = None ):
@@ -147,6 +160,7 @@ class OneExercisePerDirectoryScanner( FileSystemScanner ):
 
 class TristoMietitoreScanner( OneExercisePerDirectoryScanner ):
 
+	SHORT_NAME = 'tm'
 	SIGNATURE_PATTERN = r'(?P<uid>.*)/SIGNATURE\.tsv'
 
 	def signature_reader( self, path ):
@@ -156,14 +170,22 @@ class TristoMietitoreScanner( OneExercisePerDirectoryScanner ):
 		return s
 
 
-SCANNERS = {
-	'1f': OneExercisePerFileScanner,
-	'1d': OneExercisePerDirectoryScanner,
-	'tm': TristoMietitoreScanner
-}
+SCANNERS = ScannerTracker.SCANNERS
 
 def main():
-	print SCANNERS[ argv[ 1 ] ]( argv[ 2 ], argv[ 3 ] if len( argv ) == 4 else None ).scan().sort().tojson()
 
-if __name__ == '__main__':
-	main()
+	parser = ArgumentParser( prog = 'tm mkresults' )
+	parser.add_argument( '--scanner', '-s', help = 'The scanner to use (default: {0}; available: {1})'.format( SCANNERS[ -1 ][ 0 ], ', '.join( map( itemgetter( 0 ), SCANNERS ) ) ) )
+	parser.add_argument( 'results_dir', help = 'The directory where the results where stored' )
+	parser.add_argument( 'json_output', help = 'The file where to store the json summary', type = FileType( 'wb' ) )
+	parser.add_argument( 'extra_args', help = 'Extra arguments, passed to the scanner', nargs = REMAINDER )
+	args = parser.parse_args()
+
+	scanner = None
+	try:
+		scanner = dict( SCANNERS )[ args.scanner ] if args.scanner else SCANNERS[ -1 ][ 1 ]
+	except KeyError:
+		parser.error( 'Scanner "{0}" not found; use -h to obtains a list of available scanners.'.format( args.scanner ) )
+
+	args.json_output.write( scanner( args.results_dir, *args.extra_args ).scan().sort().tojson() )
+	args.json_output.close()
