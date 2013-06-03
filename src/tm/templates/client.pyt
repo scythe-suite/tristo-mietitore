@@ -23,9 +23,10 @@ HOME = """### home ###"""
 SIGNATURE = """{{ signature }}"""
 INFO = """{{ info }}"""
 
+MAX_FILESIZE = 1024 * 1024
+MAX_NUM_FILES = 1024
+
 def tar( dir = '.', glob = '.*', verbose = True ):
-	MAX_FILESIZE = 10 * 1024
-	MAX_NUM_FILES = 1024
 	if not isdir( dir ): raise ValueError( '{0} is not a directory'.format( dir ) )
 	dir = abspath( dir )
 	offset = len( dir ) + 1
