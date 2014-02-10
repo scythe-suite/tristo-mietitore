@@ -20,7 +20,7 @@ rm -rf /tmp/tm_server
 mkdir -p /tmp/tm_server/{tar_dir,untar_dir}
 touch /tmp/tm_server/tar_dir/TEST
 
-./bin/tm mkconf -b ./test/conf.py -u ./test/uids.tsv /tmp/tm_server/tar_dir $TM_SETTINGS
+./bin/tm mkconf -b ./test/conf.py -r ./test/uids.tsv -u /tmp/tm_server/uploads /tmp/tm_server/tar_dir $TM_SETTINGS
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
 
