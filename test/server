@@ -22,20 +22,22 @@ touch /tmp/tm_server/tar_dir/TEST
 
 ./bin/tm mkconf -b ./test/conf.py -r ./test/uids.tsv -u /tmp/tm_server/uploads /tmp/tm_server/tar_dir $TM_SETTINGS
 
-pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:8000/$1' ).read()" | python; }
-
 # Start the server (pre-kill all other python stuff: this is not safe!)
 
 killall -m '[Pp]ython' 2>/dev/null || true
 if [ -z "$1" ]; then
-	./bin/tm web > /tmp/tm_server/outerr 2>&1 &
+	( ./bin/tm web > /tmp/tm_server/outerr 2>&1 & )
+	port=8000
 else
-	./bin/gunicorn start $TM_SETTINGS > /tmp/tm_server/outerr 2>&1
+	( ./bin/gunicorn start $TM_SETTINGS > /tmp/tm_server/outerr 2>&1 )
+	port=8002
 fi
+
+pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:$port/$1' ).read()" | python; }
 
 echo -n "Waiting for server startup"
 attempts=10
-while [[ $attempts > 0 ]] && ! grep -qE "Running on http|Booting worker with pid" /tmp/tm_server/outerr; do
+while [[ $attempts > 0 ]] && ! grep -qE "Running on http|started" /tmp/tm_server/outerr; do
 	echo -n .
 	sleep 1
 	attempts=$(( $attempts - 1 ))
@@ -79,9 +81,9 @@ rm -rf /tmp/tm_server/home /tmp/tm_server/uploads/s
 touch /tmp/tm_server/home
 assert "Installation failure" "$(pg s 2>&1)" 'Si è verificato un errore inatteso di installazione!'
 
-assert "Auth error" "$(curl -d signature=x -sL http://localhost:8000/)" '# Firma mancante, o invalida!'
+assert "Auth error" "$(curl -d signature=x -sL http://localhost:$port/)" '# Firma mancante, o invalida!'
 
-assert "Internal error" "$(curl -d signature='s:31aa7ab3db1f26dae9daf68f664c242d4c9adbcef36506c134c3eed4573f7bdc' -d tar='ERROR' -sL http://localhost:8000/)" '# Si è verificato un errore inatteso del server!'
+assert "Internal error" "$(curl -d signature='s:31aa7ab3db1f26dae9daf68f664c242d4c9adbcef36506c134c3eed4573f7bdc' -d tar='ERROR' -sL http://localhost:$port/)" '# Si è verificato un errore inatteso del server!'
 
 # Again, a very unsafe kill all!
 

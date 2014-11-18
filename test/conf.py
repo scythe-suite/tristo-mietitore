@@ -10,3 +10,5 @@ ENVIRONMENT_SETUP = """
 echo "TESTCONF"
 echo ### home ###
 """
+
+BIND = '127.0.0.1:8002'
