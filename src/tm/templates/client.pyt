@@ -17,7 +17,6 @@ from tarfile import TarFile
 from urllib import urlencode
 from urllib2 import urlopen
 
-ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}"""
 BASE_URL = """{{ request.url_root }}"""
 HOME = """### home ###"""
 SIGNATURE = """{{ signature }}"""
