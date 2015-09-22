@@ -30,7 +30,7 @@ try:
 except:
 	exit( 'Error loading TM_SETTINGS, is such variable defined?' )
 
-# setup the loaded so that if finds the templates also in the zip file
+# setup the loader so that if finds the templates also in the zip file
 app.jinja_loader = PackageLoader( 'tm' )
 
 # make UPLOAD_DIR resolved and absolute
