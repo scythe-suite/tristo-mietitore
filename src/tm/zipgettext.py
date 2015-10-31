@@ -1,14 +1,16 @@
 from errno import ENOENT
 from gettext import GNUTranslations, NullTranslations
 from io import BytesIO
+from os.path import isdir, join, dirname
+from zipfile import ZipFile
 
-from pkg_resources import resource_string
+PACKAGE_PATH = dirname( dirname( __file__ ) )
 
 def translation( lang ):
 	try:
-		mo = resource_string( 'tm', 'mos/{0}.mo'.format( lang ) )
-	except IOError as e:
-		if e.errno == ENOENT: return NullTranslations()
-		else: raise
+		with ZipFile( PACKAGE_PATH ) as f:
+			mo = f.read( 'tm/mos/{0}.mo'.format( lang ) )
+	except KeyError:
+		return NullTranslations()
 	else:
 		return GNUTranslations( BytesIO( mo ) )

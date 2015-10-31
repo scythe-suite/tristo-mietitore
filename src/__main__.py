@@ -1,5 +1,6 @@
 from importlib import import_module
 from sys import argv
+from os.path import dirname
 
 if __name__ == '__main__':
 	try:

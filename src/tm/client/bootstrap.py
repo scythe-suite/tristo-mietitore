@@ -10,11 +10,11 @@
 
 echo = lambda message: 'echo "{0}"'.format( message )
 
-{% if client_code %}
+#{% if client_code %}
 
-{% if not config.DEBUG %}
+#{% if not config.DEBUG %}
 import sys; sys.excepthook = lambda t, v, tb: sys.exit( """{{ _( "An unexpected installation error occurred!" ) }}""" )
-{%- endif %}
+#{%- endif %}
 
 from base64 import decodestring
 from errno import EEXIST, ENOENT
@@ -58,12 +58,12 @@ echoes = [ echo( """{{ _( "Installed in {home} for: {info}" ) }}""".format( home
 if ENVIRONMENT_SETUP: echoes.extend(  _ for _ in ENVIRONMENT_SETUP.splitlines() if _ )
 print '; '.join(  echoes  )
 
-{% elif info %}
+#{% elif info %}
 
 print echo( """{{ _( "UID already signed as: {info}" ) }}""".format( info = """{{ info }}""" ) )
 
-{% else %}
+#{% else %}
 
 print echo( """{{ _( "UID not registered" ) }}""" )
 
-{%- endif -%}
+#{%- endif -%}

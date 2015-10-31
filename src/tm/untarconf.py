@@ -1,10 +1,6 @@
 from argparse import ArgumentParser
 
-from pkg_resources import resource_string
-
-loc = {}
-exec resource_string( 'tm', 'templates/client.pyt' ) in loc
-untar = loc[ 'untar' ]
+from tm.client import untar
 
 def main():
 

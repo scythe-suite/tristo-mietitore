@@ -1,22 +1,22 @@
-# Italian translations for PROJECT.
-# Copyright (C) 2013 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+# Italian translations for tristo-mietitore.
+# Copyright (C) 2015 Massimo Santini
+# This file is distributed under the same license as the tristo-mietitore project.
+# Massimo Santini <santini@di.unimi.it>, 2015.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-12-28 10:16+0100\n"
+"tristo-mietitore-Id-Version: tristo-mietitore 0.1-beta\n"
+"Report-Msgid-Bugs-To: santini@di.unimi.it\n"
+"POT-Creation-Date: 2015-09-22 09:48+0200\n"
 "PO-Revision-Date: 2013-02-09 01:00+0100\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Massimo Santini <santini@di.unimi.it>\n"
 "Language-Team: it <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Generated-By: Babel 2.0\n"
 
 #: src/tm/web.py:118
 msgid "An unexpected bootstrap error occurred!"
@@ -30,28 +30,28 @@ msgstr "Firma mancante, o invalida!"
 msgid "An unexpected server error occurred!"
 msgstr "Si è verificato un errore inatteso del server!"
 
-#: src/tm/templates/bootstrap.pyt:16
+#: src/tm/client/__init__.py:7
+msgid "An unexpected client error occurred!"
+msgstr "Si è verificato un errore inatteso del cliernt!"
+
+#: src/tm/client/bootstrap.py:16
 msgid "An unexpected installation error occurred!"
 msgstr "Si è verificato un errore inatteso di installazione!"
 
-#: src/tm/templates/bootstrap.pyt:51
+#: src/tm/client/bootstrap.py:51
 msgid "Warning: ~/.bash_profile already contains EEG environment setup"
 msgstr "Attenzione, l'ambiente di sistema è già stato aggiornato"
 
-#: src/tm/templates/bootstrap.pyt:57
+#: src/tm/client/bootstrap.py:57
 #, fuzzy
 msgid "Installed in {home} for: {info}"
 msgstr "Effettuata installazione in {home} per: {info}"
 
-#: src/tm/templates/bootstrap.pyt:63
+#: src/tm/client/bootstrap.py:63
 msgid "UID already signed as: {info}"
 msgstr "Matricola già in uso per lo studente: {info}"
 
-#: src/tm/templates/bootstrap.pyt:67
+#: src/tm/client/bootstrap.py:67
 msgid "UID not registered"
 msgstr "Matricola non registrata all'esame"
-
-#: src/tm/templates/client.pyt:7
-msgid "An unexpected client error occurred!"
-msgstr "Si è verificato un errore inatteso del cliernt!"
 

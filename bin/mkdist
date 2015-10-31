@@ -26,10 +26,6 @@ if [ ! -d ./vendor/markupsafe ]; then
 	echocol "Getting markupsafe"
 	curl -sL https://github.com/mitsuhiko/markupsafe/tarball/0.18 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/markupsafe'
 fi
-# if [ ! -r ./vendor/pkg_resources.py ]; then
-# 	echocol "Getting pkg_resources"
-# 	curl -sL https://pypi.python.org/packages/source/s/setuptools/setuptools-17.1.1.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/pkg_resources.py'
-# fi
 if [ ! -r ./vendor/babel ]; then
 	echocol "Getting pybabel"
 	curl -sL http://ftp.edgewall.com/pub/babel/Babel-0.9.6.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel'
@@ -40,7 +36,6 @@ if [ ! -d ./vendor/werkzeug ]; then
 fi
 echocol "Vendorizing [end]"
 
-
 echocol "Copying source files to dist"
 
 cp -rv ./src/{tm,__main__.py} $tempdir/dist
@@ -49,7 +44,7 @@ cp -rv ./vendor/* $tempdir/dist
 echocol "Compiling and removing source files"
 
 ( cd $tempdir/dist; python -m compileall . )
-find $tempdir/dist -name \*.py -exec rm {} \;
+find $tempdir/dist -name client -prune -o -name \*.py -exec rm {} \;
 
 echocol "Compiling language files"
 
