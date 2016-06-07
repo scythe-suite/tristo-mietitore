@@ -8,7 +8,7 @@ from os.path import join, normpath
 from re import compile as recompile
 
 LOG_LEVEL = INFO
-basicConfig( format = '%(asctime)s %(levelname)s: %(funcName)s %(message)s', datefmt = '%Y-%m-%d %H:%M:%S', level = LOG_LEVEL )
+basicConfig( format = '%(asctime)s %(levelname)s: [%(funcName)s] %(message)s', datefmt = '%Y-%m-%d %H:%M:%S', level = LOG_LEVEL )
 LOGGER = getLogger( __name__ )
 
 PATTERN_KINDS = SIGNATURE, SOURCE, SOURCES, CASE, CASES = 'signature', 'source', 'sources', 'case', 'cases'
