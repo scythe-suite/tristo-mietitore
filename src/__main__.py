@@ -6,6 +6,6 @@ if __name__ == '__main__':
 	try:
 		import_module( 'tm.{0}'.format( argv.pop( 1 ) ) ).main()
 	except ( IndexError, ImportError ):
-		print 'usage: tm {web,mkconf,untarconf,mkresults} ...'
+		print 'usage: tm {web,mkconf,untarconf,hashconf,mkresults} ...'
 	except:
 		raise
