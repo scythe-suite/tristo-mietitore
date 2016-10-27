@@ -96,9 +96,9 @@ class FileSystemScanner( object ):
 					if match:
 						keys = _to_keys( match )
 						if keys.exercise: exercise_names.add( keys.exercise )
-						LOGGER.info( 'Match of kind {0}, {1}'.format( kind, keys ) )
 						value = self.readers[ kind ]( path )
 						_assign( kind, keys, value )
+						LOGGER.info( 'Match of kind {0}, {1}'.format( kind, keys ) )
 
 		# fix (transforming dicts in lists)
 
