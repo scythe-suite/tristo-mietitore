@@ -4,7 +4,7 @@ from errno import EEXIST
 from hmac import new as mac
 from hashlib import sha256
 from logging import StreamHandler, FileHandler, Formatter, INFO, getLogger
-from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY, environ
+from os import makedirs, open as os_open, close, write, O_EXCL, O_CREAT, O_WRONLY, environ, getpid
 from os.path import join, isdir, abspath, expanduser, expandvars
 from sys import argv, exit
 from tarfile import TarFile
@@ -47,7 +47,7 @@ if not app.debug:
 	app.logger.setLevel( INFO )
 EVENTS_LOG = getLogger( 'EVENTS_LOG' )
 EVENTS_LOG.setLevel( INFO )
-fh = FileHandler( join( app.config[ 'UPLOAD_DIR' ], 'EVENTS.log' ) )
+fh = FileHandler( join( app.config[ 'UPLOAD_DIR' ], 'EVENTS-{}.log'.format( getpid() ) ) )
 fh.setLevel( INFO )
 f = Formatter( '%(asctime)s: %(message)s', '%Y-%m-%d %H:%M:%S' )
 fh.setFormatter( f )
