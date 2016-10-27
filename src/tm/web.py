@@ -37,6 +37,9 @@ app.jinja_loader = PackageLoader( 'tm', 'client' )
 app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
 safe_makedirs( app.config[ 'UPLOAD_DIR' ] )
 
+# compute a digest of TAR_DATA to show at root URL
+app.config[ 'TAR_DIGEST' ] = mac( app.config[ 'SECRET_KEY' ], app.config[ 'TAR_DATA' ], sha256 ).hexdigest()
+
 # setup logging
 if not app.debug:
 	sh = StreamHandler()
@@ -120,7 +123,7 @@ def bootstrap( uid ):
 @app.route( '/', methods = [ 'GET', 'POST' ] )
 def handle():
 	try:
-		if request.method == 'GET': return _as_text()
+		if request.method == 'GET': return _as_text( app.config[ 'TAR_DIGEST' ] )
 		try:
 			signature = request.form[ 'signature' ]
 		except KeyError:
