@@ -116,7 +116,7 @@ class FileSystemScanner( object ):
 					for source_name, source in exercise[ 'sources' ].items():
 						sources.append( { 'name': source_name, 'content': source } )
 					exercise[ 'sources' ] = sources
-				if isinstance( exercise[ 'sources' ], dict ):
+				if isinstance( exercise[ 'cases' ], dict ):
 					cases = []
 					for case_name, case in exercise[ 'cases' ].items():
 						case[ 'name' ] = case_name
@@ -139,7 +139,7 @@ class FileSystemScanner( object ):
 class OneExercisePerFileScanner( FileSystemScanner ):
 
 	SHORT_NAME = '1f'
-	SOURCE_PATTERN = r'(?P<uid>.*)/(?P<source>(?P<exercise>.*)\.{0})$'
+	SOURCE_PATTERN = r'(?P<uid>.+)/(?P<source>(?P<exercise>.+)\.{0})$'
 
 	def __init__( self, basedir, extension = None ):
 		if not extension: extension = '.+'
@@ -150,7 +150,7 @@ class OneExercisePerFileScanner( FileSystemScanner ):
 class OneExercisePerDirectoryScanner( FileSystemScanner ):
 
 	SHORT_NAME = '1d'
-	SOURCE_PATTERN = r'(?P<uid>.*)/(?P<exercise>.*)/(?P<source>.*\.{0})$'
+	SOURCE_PATTERN = r'(?P<uid>.+)/(?P<exercise>.+)/(?P<source>.+\.{0})$'
 
 	def __init__( self, basedir, extension = None ):
 		if not extension: extension = '.+'
@@ -161,7 +161,7 @@ class OneExercisePerDirectoryScanner( FileSystemScanner ):
 class TristoMietitoreScanner( OneExercisePerDirectoryScanner ):
 
 	SHORT_NAME = 'tm'
-	SIGNATURE_PATTERN = r'(?P<uid>.*)/SIGNATURE\.tsv'
+	SIGNATURE_PATTERN = r'(?P<uid>.+)/SIGNATURE\.tsv'
 
 	def signature_reader( self, path ):
 		with open( path, 'rb' ) as f: content = unicode( f.read(), errors = 'replace' )
