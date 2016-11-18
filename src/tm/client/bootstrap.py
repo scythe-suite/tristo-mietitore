@@ -11,15 +11,18 @@
 echo = lambda message: 'echo "{0}"'.format( message )
 
 #{% if client_code %}
-
 #{% if not config.DEBUG %}
-import sys; sys.excepthook = lambda t, v, tb: sys.exit( """{{ _( "An unexpected installation error occurred!" ) }}""" )
+import sys
+def muted_excepthook(t, v, tb):
+	print echo( """{{ _( "An unexpected installation error occurred!" ) }}""" )
+	sys.exit()
+sys.excepthook = muted_excepthook
 #{%- endif %}
 
 from base64 import decodestring
 from errno import EEXIST, ENOENT
 from os import chmod, makedirs
-from os.path import join, expandvars, expanduser, isdir, abspath
+from os.path import join, expandvars, expanduser, isdir, abspath, dirname
 from subprocess import check_output
 
 HOME = abspath( expandvars( expanduser( """{{ config.HOME }}""" ) ) )
@@ -34,6 +37,13 @@ except OSError as e:
 	if e.errno == EEXIST and isdir( HOME ): pass
 	else: raise RuntimeError( '{0} exists and is not a directory'.format( HOME ) )
 
+try:
+	makedirs( dirname( CLIENT_PATH ), 0700 )
+except OSError as e:
+	if e.errno == EEXIST and isdir( dirname( CLIENT_PATH ) ): pass
+	else: raise RuntimeError( '{0} exists and is not a directory'.format( dirname( CLIENT_PATH ) ) )
+
+chmod( dirname( CLIENT_PATH ), 0700 ) # in case it already existed
 with open( CLIENT_PATH, 'w' ) as f: f.write( CLIENT_CODE )
 chmod( CLIENT_PATH, 0700 )
 
@@ -52,7 +62,7 @@ if ENVIRONMENT_SETUP:
 	else:
 		with open( profile, 'a' ) as f: f.write( '\n' + to_append + '\n' )
 
-check_output( [ CLIENT_PATH, 'dl' ] )
+check_output( [ CLIENT_PATH, 'dl' ] ) # how to grab errors here?
 
 echoes = [ echo( """{{ _( "Installed in {home} for: {info}" ) }}""".format( home = HOME, info = INFO.replace( '"', r'\"' ) ) ) ]
 if ENVIRONMENT_SETUP: echoes.extend(  _ for _ in ENVIRONMENT_SETUP.splitlines() if _ )

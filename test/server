@@ -72,14 +72,14 @@ assert "Upload" "$(/tmp/tm_server/home/tmclient ul ^TEST)" "TEST"
 assert "Received upload" "$(tar -C /tmp/tm_server/untar_dir -xvf /tmp/tm_server/uploads/1/*.tar TEST 2>&1)" "TEST"
 
 perl -i -pe 's/49a4405aafe63df05202df08f8f75c9247b7168159c964f697ba6f974ae40588/boo/' /tmp/tm_server/home/tmclient
-assert "Client auth error" "$(/tmp/tm_server/home/tmclient ul ^TEST 2>&1)" "Si è verificato un errore inatteso del cliernt!"
+assert "Client auth error" "$(/tmp/tm_server/home/tmclient ul ^TEST 2>&1)" "Si è verificato un errore inatteso del client!"
 
 touch /tmp/tm_server/uploads/s
 assert "Bootstrap failure" "$(pg s)" 'echo "Si è verificato un errore inatteso di avvio!"'
 
 rm -rf /tmp/tm_server/home /tmp/tm_server/uploads/s
 touch /tmp/tm_server/home
-assert "Installation failure" "$(pg s 2>&1)" 'Si è verificato un errore inatteso di installazione!'
+assert "Installation failure" "$(pg s 2>&1)" 'echo "Si è verificato un errore inatteso di installazione!"'
 
 assert "Auth error" "$(curl -d signature=x -sL http://localhost:$port/)" '# Firma mancante, o invalida!'
 
