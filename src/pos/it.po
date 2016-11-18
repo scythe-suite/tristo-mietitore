@@ -32,7 +32,7 @@ msgstr "Si è verificato un errore inatteso del server!"
 
 #: src/tm/client/__init__.py:7
 msgid "An unexpected client error occurred!"
-msgstr "Si è verificato un errore inatteso del cliernt!"
+msgstr "Si è verificato un errore inatteso del client!"
 
 #: src/tm/client/bootstrap.py:16
 msgid "An unexpected installation error occurred!"
@@ -54,4 +54,3 @@ msgstr "Matricola già in uso per lo studente: {info}"
 #: src/tm/client/bootstrap.py:67
 msgid "UID not registered"
 msgstr "Matricola non registrata all'esame"
-
