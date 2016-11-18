@@ -43,7 +43,7 @@ except OSError as e:
 	if e.errno == EEXIST and isdir( dirname( CLIENT_PATH ) ): pass
 	else: raise RuntimeError( '{0} exists and is not a directory'.format( dirname( CLIENT_PATH ) ) )
 
-chmod( dirname( CLIENT_PATH ), 0700 ) # in case it already existed
+chmod( dirname( CLIENT_PATH ), 0700 ) # in case it already existed
 with open( CLIENT_PATH, 'w' ) as f: f.write( CLIENT_CODE )
 chmod( CLIENT_PATH, 0700 )
 

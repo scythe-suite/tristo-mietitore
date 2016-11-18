@@ -57,6 +57,7 @@ done
 
 echocol "Preparing zip file"
 
+rm -f $(pwd)/bin/tm
 ( cd $tempdir/dist;  zip -9r $tempdir/tm.zip . )
 echo '#!/usr/bin/env python' > $(pwd)/bin/tm
 cat $tempdir/tm.zip >> $(pwd)/bin/tm
