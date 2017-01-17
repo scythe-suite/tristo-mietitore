@@ -2,7 +2,7 @@
 #
 # To use this bootstrap script define the following bash function
 #
-#	sign() { eval $( python -c "from urllib2 import urlopen; exec urlopen( '{{ request.url_root }}$1' ).read()" ); }
+#	sign() { eval $( python -c "from urllib2 import urlopen; exec urlopen( '{{ base_url if base_url else request.url_root }}$1' ).read()" ); }
 #
 # and then invoke it as:
 #

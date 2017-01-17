@@ -33,6 +33,10 @@ except:
 # setup the loader so that if finds the templates also in the zip file
 app.jinja_loader = PackageLoader( 'tm', 'client' )
 
+# setup the endpoint
+if not 'BASE_URL' in app.config:
+	app.config[ 'BASE_URL' ] = None
+
 # make UPLOAD_DIR resolved and absolute
 app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOAD_DIR' ] ) ) )
 safe_makedirs( app.config[ 'UPLOAD_DIR' ] )
@@ -105,14 +109,14 @@ def extract_uid( signature ):
 def bootstrap( uid ):
 	try:
 		info, signature = sign( uid )
-		client_code = encodestring( render_template( '__init__.py', info = info, signature = signature ).encode( 'utf8' ) ) if signature else None
+		client_code = encodestring( render_template( '__init__.py', info = info, signature = signature, base_url = app.config['BASE_URL'] ).encode( 'utf8' ) ) if signature else None
 		if signature:
 			EVENTS_LOG.info( 'Signed: {0}@{1}'.format( uid, request.remote_addr ) )
 		elif info:
 			EVENTS_LOG.info( 'Not signed (already done): {0}@{1}'.format( uid, request.remote_addr ) )
 		else:
 			EVENTS_LOG.info( 'Not signed (not registered): {0}@{1}'.format( uid, request.remote_addr ) )
-		return _as_text( render_template( 'bootstrap.py', client_code = client_code, info = info ) )
+		return _as_text( render_template( 'bootstrap.py', client_code = client_code, info = info, base_url = app.config['BASE_URL'] ) )
 	except:
 		if app.debug:
 			raise
