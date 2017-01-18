@@ -1,6 +1,7 @@
 from argparse import ArgumentParser, REMAINDER, FileType
 from collections import namedtuple
 from json import dumps
+from importlib import import_module
 from logging import basicConfig, getLogger, DEBUG, INFO
 from operator import itemgetter
 from os import walk
@@ -16,7 +17,7 @@ PATTERN_KINDS = SIGNATURE, SOURCE, SOURCES, CASE, CASES = 'signature', 'source',
 class ScannerTracker( type ):
 	SCANNERS = []
 	def __new__( cls, name, bases, dct ):
-		new = super( ScannerTracker, cls).__new__( cls, name, bases, dct )
+		new = super( ScannerTracker, cls ).__new__( cls, name, bases, dct )
 		cls.SCANNERS.append( ( dct[ 'SHORT_NAME' ], new ) )
 		return new
 
@@ -182,10 +183,22 @@ def main():
 	args = parser.parse_args()
 
 	scanner = None
-	try:
-		scanner = dict( SCANNERS )[ args.scanner ] if args.scanner else SCANNERS[ -1 ][ 1 ]
-	except KeyError:
-		parser.error( 'Scanner "{0}" not found; use -h to obtains a list of available scanners.'.format( args.scanner ) )
+	if '.' in args.scanner:
+		module = '.'.join( args.scanner.split( '.' )[ : -1 ] )
+		cls = args.scanner.split( '.' )[ -1 ]
+		try:
+			imported = import_module( module )
+		except ImportError:
+			parser.error( 'Cannot import module "{0}".'.format( module ) )
+		try:
+			scanner = imported.__getattribute__( cls )
+		except AttributeError:
+			parser.error( 'Cannot find class "{0}" in module "{1}".'.format( cls, module ) )
+	else:
+		try:
+			scanner = dict( SCANNERS )[ args.scanner ] if args.scanner else SCANNERS[ -1 ][ 1 ]
+		except KeyError:
+			parser.error( 'Scanner "{0}" not found; use -h to obtains a list of available scanners.'.format( args.scanner ) )
 
 	args.json_output.write( scanner( args.results_dir, *args.extra_args ).scan().sort().tojson() )
 	args.json_output.close()
