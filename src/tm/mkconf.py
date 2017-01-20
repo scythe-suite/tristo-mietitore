@@ -29,7 +29,10 @@ def main():
 
 		if args.registerd_uids:
 			with open( args.registerd_uids, 'r' ) as f:
-				registered_uids = dict( ( line.decode( 'utf8' ).strip().split( '\t' ) for line in f if line != '\n' and not line.startswith( '#' ) ) )
+				try:
+					registered_uids = dict( ( line.decode( 'utf8' ).strip().split( '\t' ) for line in f if line != '\n' and not line.startswith( '#' ) ) )
+				except ValueError:
+					raise ValueError( 'A line of the registered uid file "{}" does not contain exactly one tab'.format( args.registerd_uids ) )
 			out.write( '\nREGISTERED_UIDS = ' + repr( registered_uids ) + '\n' )
 
 if __name__ == '__main__':
