@@ -41,6 +41,7 @@ if [[ $attempts > 0 ]]; then
 	echo ". started!"
 else
 	echo " FAILED TO START!"
+	cat /tmp/tm_server/outerr
 	exit 1
 fi
 
