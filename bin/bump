@@ -1,0 +1,22 @@
+#!/bin/bash
+
+what="$1"
+if [ -z "$what" ]; then
+    echo reverting version
+    git checkout -- src/tm/__init__.py
+    exit
+fi
+cat <<EOF | python
+import semver
+l = {}
+g = {}
+with open('src/tm/__init__.py') as f:
+    exec f.read() in g, l
+with open('src/tm/__init__.py', 'w') as f:
+    for k in sorted(l):
+        if k == 'VERSION':
+            v = semver.bump_${what}(l[k])
+        else:
+            v = l[k]
+        f.write('{} = {}\n'.format(k, repr(v)))
+EOF
