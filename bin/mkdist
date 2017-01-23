@@ -44,6 +44,14 @@ if [ ! -d ./vendor/werkzeug ]; then
 	echocol "Getting werkzeug"
 	curl -sL https://github.com/mitsuhiko/werkzeug/tarball/0.11.15 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
 fi
+if [ ! -r ./vendor/itsdangerous.py ]; then
+	echocol "Getting itsdangerous"
+	curl -sL https://github.com/pallets/itsdangerous/tarball/0.24 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/itsdangerous.py'
+fi
+if [ ! -d ./vendor/click ]; then
+	echocol "Getting click"
+	curl -sL https://github.com/pallets/click/tarball/6.7 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/click'
+fi
 echocol "Vendorizing [end]"
 
 echocol "Copying source files to dist"
