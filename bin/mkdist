@@ -40,6 +40,10 @@ if [ ! -d ./vendor/werkzeug ]; then
 	echocol "Getting werkzeug"
 	curl -sL https://github.com/mitsuhiko/werkzeug/tarball/0.11.15 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
 fi
+if [ ! -r ./vendor/pytz ]; then
+    echocol "Getting pytz"
+    curl -sL https://pypi.python.org/packages/42/00/5c89fc6c9b305df84def61863528e899e9dccb196f8438f6cbe960758fc5/pytz-2016.10.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/pytz'
+fi
 echocol "Vendorizing [end]"
 
 echocol "Copying source files to dist"
