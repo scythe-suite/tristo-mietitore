@@ -2,4 +2,3 @@ sudo: False
 language: python
 python: "2.7"
 script: ./test/doall
-install: pip install gunicorn gevent

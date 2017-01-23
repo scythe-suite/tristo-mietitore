@@ -25,13 +25,8 @@ touch /tmp/tm_server/tar_dir/TEST
 # Start the server (pre-kill all other python stuff: this is not safe!)
 
 killall -m '[Pp]ython' 2>/dev/null || true
-if [ -z "$1" ]; then
-	( ./bin/tm web > /tmp/tm_server/outerr 2>&1 & )
-	port=8000
-else
-	( ./bin/gunicorn start $TM_SETTINGS > /tmp/tm_server/outerr 2>&1 )
-	port=8002
-fi
+( ./bin/tm web > /tmp/tm_server/outerr 2>&1 & )
+port=8000
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:$port/$1' ).read()" | python; }
 

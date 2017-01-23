@@ -5,13 +5,9 @@ echocol() { echo -e "\033[32m*** $@...\033[0m"; }
 echocol mkdist
 ./bin/mkdist
 
-tests="server serverx tar gensecret"
+tests="server server tar gensecret"
 
 for t in $tests; do
 	echocol $t
-	if [[ $t == serverx ]]; then
-		./test/server x
-	else
-		./test/$t
-	fi
+	./test/$t
 done
