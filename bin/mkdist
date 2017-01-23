@@ -27,6 +27,10 @@ if [ ! -d ./vendor/markupsafe ]; then
 	echocol "Getting markupsafe"
 	curl -sL https://github.com/mitsuhiko/markupsafe/tarball/0.23 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/markupsafe'
 fi
+if [ ! -r ./vendor/pytz ]; then
+    echocol "Getting pytz"
+    curl -sL https://pypi.python.org/packages/42/00/5c89fc6c9b305df84def61863528e899e9dccb196f8438f6cbe960758fc5/pytz-2016.10.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/pytz'
+fi
 if [ ! -r ./vendor/babel ]; then
 	echocol "Getting pybabel"
 	curl -sL https://github.com/python-babel/babel/archive/2.3.4.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel' '*/scripts' '*/cldr'
@@ -39,10 +43,6 @@ fi
 if [ ! -d ./vendor/werkzeug ]; then
 	echocol "Getting werkzeug"
 	curl -sL https://github.com/mitsuhiko/werkzeug/tarball/0.11.15 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
-fi
-if [ ! -r ./vendor/pytz ]; then
-    echocol "Getting pytz"
-    curl -sL https://pypi.python.org/packages/42/00/5c89fc6c9b305df84def61863528e899e9dccb196f8438f6cbe960758fc5/pytz-2016.10.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/pytz'
 fi
 echocol "Vendorizing [end]"
 
