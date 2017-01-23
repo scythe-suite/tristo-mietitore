@@ -16,23 +16,29 @@ mkdir -p ./vendor
 echocol "Vendorizing [begin]"
 if [ ! -d ./vendor/flask ]; then
 	echocol "Getting flask"
-	curl -sL https://github.com/mitsuhiko/flask/tarball/0.9 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/flask'
+	curl -sL https://github.com/pallets/flask/tarball/0.12 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/flask'
 fi
 if [ ! -d ./vendor/jinja2 ]; then
 	echocol "Getting jinja2"
-	curl -sL https://github.com/mitsuhiko/jinja2/tarball/2.7 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/jinja2'
+	curl -sL https://github.com/mitsuhiko/jinja2/tarball/2.9.4 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/jinja2'
+    rm -f ./vendor/jinja2/async{support,filters}.py
 fi
 if [ ! -d ./vendor/markupsafe ]; then
 	echocol "Getting markupsafe"
-	curl -sL https://github.com/mitsuhiko/markupsafe/tarball/0.18 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/markupsafe'
+	curl -sL https://github.com/mitsuhiko/markupsafe/tarball/0.23 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/markupsafe'
 fi
 if [ ! -r ./vendor/babel ]; then
 	echocol "Getting pybabel"
-	curl -sL http://ftp.edgewall.com/pub/babel/Babel-0.9.6.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel'
+	curl -sL https://github.com/python-babel/babel/archive/2.3.4.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel' '*/scripts' '*/cldr'
+    (cd vendor && python scripts/download_import_cldr.py)
+    rm -rf vendor/{scripts,cldr,docs}
+    (cd vendor/babel/locale-data && ls -1 | grep -vf ../../../etc/locales-tokeep.txt) | while read lang; do
+         rm -f "vendor/babel/locale-data/$lang"
+    done
 fi
 if [ ! -d ./vendor/werkzeug ]; then
 	echocol "Getting werkzeug"
-	curl -sL https://github.com/mitsuhiko/werkzeug/tarball/0.8.3 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
+	curl -sL https://github.com/mitsuhiko/werkzeug/tarball/0.11.15 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
 fi
 echocol "Vendorizing [end]"
 

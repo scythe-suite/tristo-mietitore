@@ -1,0 +1,4 @@
+src/pos/*.mo
+src/pos/*.pot
+vendor/
+bin/tm

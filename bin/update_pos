@@ -1,8 +1,10 @@
 #!/bin/bash
 
+export PYTHONPATH=./vendor
+
 for po in ./src/pos/*.po; do
 	bn=${po##*/}
 	lang=${bn%.po}
-	pybabel extract -F ./etc/pybabel.cfg ./src/tm -o ./src/pos/$lang.pot
-	pybabel update  -i ./src/pos/$lang.pot -l $lang -o ./src/pos/$lang.po
+	python -m babel.messages.frontend extract -F ./etc/pybabel.cfg ./src/tm -o ./src/pos/$lang.pot
+	python -m babel.messages.frontend update  -i ./src/pos/$lang.pot -l $lang -o ./src/pos/$lang.po
 done

@@ -1,6 +1,0 @@
-.*\.mo
-.*\.pot
-^var$
-^vendor$
-^tm.zip$
-^bin/tm$
