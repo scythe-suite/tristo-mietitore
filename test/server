@@ -20,12 +20,12 @@ rm -rf /tmp/tm_server
 mkdir -p /tmp/tm_server/{tar_dir,untar_dir}
 touch /tmp/tm_server/tar_dir/TEST
 
-./bin/tm mkconf -b ./test/conf.py -r ./test/uids.tsv -u /tmp/tm_server/uploads /tmp/tm_server/tar_dir $TM_SETTINGS
+./release/tm mkconf -b ./test/conf.py -r ./test/uids.tsv -u /tmp/tm_server/uploads /tmp/tm_server/tar_dir $TM_SETTINGS
 
 # Start the server (pre-kill all other python stuff: this is not safe!)
 
 killall -m '[Pp]ython' 2>/dev/null || true
-( ./bin/tm web > /tmp/tm_server/outerr 2>&1 & )
+( ./release/tm web > /tmp/tm_server/outerr 2>&1 & )
 port=8000
 
 pg() { python -c "from urllib2 import urlopen; print urlopen( 'http://localhost:$port/$1' ).read()" | python; }
