@@ -1,4 +1,5 @@
+local
+release
+vendor
 src/pos/*.mo
 src/pos/*.pot
-vendor/
-bin/tm

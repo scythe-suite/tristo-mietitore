@@ -11,6 +11,7 @@ echocol "Setup dirs"
 tempdir=$(mktemp -d /tmp/tm-XXXXXXXXX) || exit 1
 
 mkdir -p $tempdir/dist
+mkdir -p ./release
 mkdir -p ./vendor
 
 echocol "Vendorizing [begin]"
@@ -75,10 +76,10 @@ done
 
 echocol "Preparing zip file"
 
-rm -f $(pwd)/bin/tm
+rm -f $(pwd)/release/tm
 ( cd $tempdir/dist;  zip -9r $tempdir/tm.zip . )
-echo '#!/usr/bin/env python' > $(pwd)/bin/tm
-cat $tempdir/tm.zip >> $(pwd)/bin/tm
-chmod u+rx $(pwd)/bin/tm
+echo '#!/usr/release/env python' > $(pwd)/release/tm
+cat $tempdir/tm.zip >> $(pwd)/release/tm
+chmod u+rx $(pwd)/release/tm
 
 rm -rf $tempdir
