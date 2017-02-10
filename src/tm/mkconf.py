@@ -2,6 +2,14 @@ from argparse import ArgumentParser
 
 from tm.client import tar, untar, lstar
 
+def read_uids(path):
+	with open( path, 'r' ) as f:
+		try:
+			uids = dict( ( line.decode( 'utf8' ).strip().split( '\t' ) for line in f if line != '\n' and not line.startswith( '#' ) ) )
+		except ValueError:
+			raise ValueError( 'A line of the UIDs file "{}" does not contain exactly one tab'.format( args.registerd_uids ) )
+	return uids
+
 def main():
 
 	parser = ArgumentParser( prog = 'tm mkconf' )
@@ -28,12 +36,7 @@ def main():
 		out.write( 'TAR_DATA = """\n' + tar_data + '"""\n' )
 
 		if args.registerd_uids:
-			with open( args.registerd_uids, 'r' ) as f:
-				try:
-					registered_uids = dict( ( line.decode( 'utf8' ).strip().split( '\t' ) for line in f if line != '\n' and not line.startswith( '#' ) ) )
-				except ValueError:
-					raise ValueError( 'A line of the registered uid file "{}" does not contain exactly one tab'.format( args.registerd_uids ) )
-			out.write( '\nREGISTERED_UIDS = ' + repr( registered_uids ) + '\n' )
+			out.write( '\nREGISTERED_UIDS = ' + repr( read_uids( args.registerd_uids ) ) + '\n' )
 
 if __name__ == '__main__':
 	main()
