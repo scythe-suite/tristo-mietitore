@@ -133,9 +133,11 @@ class FileSystemScanner( object ):
 		self.results.sort( key = lambda _: _[ 'signature' ][ 'uid' ] )
 		return self
 
-	def tojson( self ):
-		return dumps( self.results )
-
+	def tojson( self, accept = None ):
+		if accept is None:
+			return dumps( self.results )
+		else:
+			return dumps( filter( accept, self.results ) )
 
 class OneExercisePerFileScanner( FileSystemScanner ):
 
