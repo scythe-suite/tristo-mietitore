@@ -4,7 +4,7 @@ from os.path import dirname
 
 from tm import VERSION
 
-COMMANDS = 'web', 'mkconf', 'untarconf', 'hashconf', 'mkresults'
+COMMANDS = 'web', 'mkconf', 'untarconf', 'hashconf', 'mkresults', 'listuids'
 
 if __name__ == '__main__':
     try:
