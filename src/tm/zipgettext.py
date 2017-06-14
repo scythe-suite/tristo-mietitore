@@ -1,7 +1,6 @@
-from errno import ENOENT
 from gettext import GNUTranslations, NullTranslations
 from io import BytesIO
-from os.path import isdir, join, dirname
+from os.path import dirname
 from zipfile import ZipFile
 
 PACKAGE_PATH = dirname( dirname( __file__ ) )
