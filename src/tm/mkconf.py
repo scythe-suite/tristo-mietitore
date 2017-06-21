@@ -7,7 +7,7 @@ def read_uids(path):
 		try:
 			uids = dict( ( line.decode( 'utf8' ).strip().split( '\t' ) for line in f if line != '\n' and not line.startswith( '#' ) ) )
 		except ValueError:
-			raise ValueError( 'A line of the UIDs file "{}" does not contain exactly one tab'.format( args.registerd_uids ) )
+			raise ValueError( 'A line of the UIDs file "{}" does not contain exactly one tab'.format( path ) )
 	return uids
 
 def main():
