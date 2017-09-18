@@ -40,14 +40,18 @@ def tar( dir = '.', glob = '.*', verbose = True ):
 				path = join( base, fpath )
 				rpath = path[ offset: ]
 				if glob.search( rpath ) and stat( path ).st_size < MAX_FILESIZE:
-					num_files += 1
-					if num_files > MAX_NUM_FILES: break
-					if verbose: sys.stderr.write( rpath + '\n' )
-					with open( path, 'rb' ) as f:
-						ti = tf.gettarinfo( arcname = rpath, fileobj = f )
-						ti.mtime = 1
+					try:
+						with open( path, 'rb' ) as f:
+							ti = tf.gettarinfo( arcname = rpath, fileobj = f )
+							ti.mtime = 1
+							tf.addfile( ti, fileobj = f )
+					except IOError:
+						sys.stderr.write( 'failed to read: ' + rpath + '\n' )
+					else:
 						nonempty_dirs.add( dirname( path ) )
-						tf.addfile( ti, fileobj = f )
+						num_files += 1
+						if num_files > MAX_NUM_FILES: break
+						if verbose: sys.stderr.write( rpath + '\n' )
 		for path in nonempty_dirs:
 			rpath = path[ offset: ]
 			if not rpath: continue
