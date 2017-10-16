@@ -78,8 +78,12 @@ echocol "Preparing zip file"
 
 rm -f $(pwd)/release/tm
 ( cd $tempdir/dist;  zip -9r $tempdir/tm.zip . )
-echo '#!/usr/bin/env python' > $(pwd)/release/tm
+echo '#!/usr/bin/env python2' > $(pwd)/release/tm
 cat $tempdir/tm.zip >> $(pwd)/release/tm
 chmod u+rx $(pwd)/release/tm
 
 rm -rf $tempdir
+
+echocol "Built version is"
+
+./release/tm version
