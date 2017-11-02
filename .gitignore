@@ -1,5 +1,5 @@
-local
-release
-vendor
+local/
+release/
+vendor/
 src/pos/*.mo
 src/pos/*.pot
