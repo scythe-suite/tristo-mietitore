@@ -14,7 +14,7 @@ from jinja2 import PackageLoader
 from flask import Flask, render_template, request
 
 from tm.zipgettext import translation
-
+from tm.hashconf import hashtar
 
 def safe_makedirs( path ):
 	try:
@@ -42,7 +42,7 @@ app.config[ 'UPLOAD_DIR' ] = abspath( expandvars( expanduser( app.config[ 'UPLOA
 safe_makedirs( app.config[ 'UPLOAD_DIR' ] )
 
 # compute a digest of TAR_DATA to show at root URL
-app.config[ 'TAR_DIGEST' ] = mac( app.config[ 'SECRET_KEY' ], app.config[ 'TAR_DATA' ], sha256 ).hexdigest()
+app.config[ 'TAR_DIGEST' ] = hashtar( app.config[ 'SECRET_KEY' ], app.config[ 'TAR_DATA' ] )
 
 # setup logging
 if not app.debug:
