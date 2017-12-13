@@ -40,21 +40,21 @@ if [ ! -d ./vendor/click ]; then
 	echocol "Getting click"
 	curl -sL https://github.com/pallets/click/tarball/6.7 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/click'
 fi
-if [ ! -r ./vendor/babel ]; then
-	echocol "Getting pybabel"gtg
-	curl -sL https://github.com/python-babel/babel/archive/v2.5.1.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel' '*/scripts' '*/cldr'
-    (cd vendor && python scripts/download_import_cldr.py)
-    rm -rf vendor/{scripts,cldr,docs}
-    (cd vendor/babel/locale-data && ls -1 | grep -vf ../../../etc/locales-tokeep.txt) | while read lang; do
-         rm -f "vendor/babel/locale-data/$lang"
-    done
-fi
 if [ ! -r ./vendor/pytz ]; then
     echocol "Getting pytz"
     (cd vendor &&\
         curl -sLO https://pypi.python.org/packages/a3/7f/e7d1acbd433b929168a4fb4182a2ff3c33653717195a26c1de099ad1ef29/pytz-2017.3-py2.py3-none-any.whl &&\
         unzip pytz-2017.3-py2.py3-none-any.whl &&\
         rm -rf pytz-2017.3-py2.py3-none-any.whl pytz-2017.3.dist-info)
+fi
+if [ ! -r ./vendor/babel ]; then
+	echocol "Getting pybabel"
+	curl -sL https://github.com/python-babel/babel/archive/v2.5.1.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel' '*/scripts' '*/cldr'
+    (cd vendor && python scripts/download_import_cldr.py)
+    rm -rf vendor/{scripts,cldr,docs}
+    (cd vendor/babel/locale-data && ls -1 | grep -vf ../../../etc/locales-tokeep.txt) | while read lang; do
+         rm -f "vendor/babel/locale-data/$lang"
+    done
 fi
 echocol "Vendorizing [end]"
 
