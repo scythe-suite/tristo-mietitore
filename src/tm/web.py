@@ -157,7 +157,13 @@ def handle():
 			return _as_text( '# {0}\n'.format( _( 'An unexpected server error occurred!' ) ), 500 )
 
 def main():
-    app.run( host = '0.0.0.0', port = int( environ.get( 'PORT', 8000 ) ), debug = len( argv ) > 1 )
+	try:
+		import eventlet
+		from eventlet import wsgi
+		EVENTS_LOG.info('Using eventlet...')
+		wsgi.server(eventlet.listen( ('0.0.0.0', int( environ.get( 'PORT', 8000 ) ) ) ), app )
+	except ImportError:
+		app.run( host = '0.0.0.0', port = int( environ.get( 'PORT', 8000 ) ), debug = len( argv ) > 1 )
 
 if __name__ == '__main__':
 	main()
