@@ -17,41 +17,44 @@ mkdir -p ./vendor
 echocol "Vendorizing [begin]"
 if [ ! -d ./vendor/flask ]; then
 	echocol "Getting flask"
-	curl -sL https://github.com/pallets/flask/tarball/0.12 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/flask'
+	curl -sL https://github.com/pallets/flask/tarball/0.12.2 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/flask'
 fi
 if [ ! -d ./vendor/jinja2 ]; then
 	echocol "Getting jinja2"
-	curl -sL https://github.com/mitsuhiko/jinja2/tarball/2.9.4 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/jinja2'
+	curl -sL https://github.com/pallets/jinja/tarball/2.10 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/jinja2'
     rm -f ./vendor/jinja2/async{support,filters}.py
+fi
+if [ ! -d ./vendor/werkzeug ]; then
+	echocol "Getting werkzeug"
+	curl -sL https://github.com/pallets/werkzeug/tarball/0.13 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
 fi
 if [ ! -d ./vendor/markupsafe ]; then
 	echocol "Getting markupsafe"
-	curl -sL https://github.com/mitsuhiko/markupsafe/tarball/0.23 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/markupsafe'
+	curl -sL https://github.com/pallets/markupsafe/tarball/1.0 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/markupsafe'
 fi
-if [ ! -r ./vendor/pytz ]; then
-    echocol "Getting pytz"
-    curl -sL https://pypi.python.org/packages/42/00/5c89fc6c9b305df84def61863528e899e9dccb196f8438f6cbe960758fc5/pytz-2016.10.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/pytz'
+if [ ! -r ./vendor/itsdangerous.py ]; then
+	echocol "Getting itsdangerous"
+	curl -sL https://github.com/pallets/itsdangerous/tarball/0.24 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/itsdangerous.py'
+fi
+if [ ! -d ./vendor/click ]; then
+	echocol "Getting click"
+	curl -sL https://github.com/pallets/click/tarball/6.7 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/click'
 fi
 if [ ! -r ./vendor/babel ]; then
-	echocol "Getting pybabel"
-	curl -sL https://github.com/python-babel/babel/archive/2.3.4.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel' '*/scripts' '*/cldr'
+	echocol "Getting pybabel"gtg
+	curl -sL https://github.com/python-babel/babel/archive/v2.5.1.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel' '*/scripts' '*/cldr'
     (cd vendor && python scripts/download_import_cldr.py)
     rm -rf vendor/{scripts,cldr,docs}
     (cd vendor/babel/locale-data && ls -1 | grep -vf ../../../etc/locales-tokeep.txt) | while read lang; do
          rm -f "vendor/babel/locale-data/$lang"
     done
 fi
-if [ ! -d ./vendor/werkzeug ]; then
-	echocol "Getting werkzeug"
-	curl -sL https://github.com/mitsuhiko/werkzeug/tarball/0.11.15 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
-fi
-if [ ! -r ./vendor/itsdangerous.py ]; then
-	echocol "Getting itsdangerous"
-	curl -sL https://github.com/pallets/itsdangerous/tarball/0.24 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/itsdangerous.py'
-fi
-if [ ! -d ./vendor/click ]; then
-	echocol "Getting click"
-	curl -sL https://github.com/pallets/click/tarball/6.7 | tar -C ./vendor --strip 1 --exclude 'docs' --wildcards -zxvf - '*/click'
+if [ ! -r ./vendor/pytz ]; then
+    echocol "Getting pytz"
+    (cd vendor &&\
+        curl -sLO https://pypi.python.org/packages/a3/7f/e7d1acbd433b929168a4fb4182a2ff3c33653717195a26c1de099ad1ef29/pytz-2017.3-py2.py3-none-any.whl &&\
+        unzip pytz-2017.3-py2.py3-none-any.whl &&\
+        rm -rf pytz-2017.3-py2.py3-none-any.whl pytz-2017.3.dist-info)
 fi
 echocol "Vendorizing [end]"
 
