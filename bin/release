@@ -1,7 +1,28 @@
 #!/bin/bash
 
-unset rgit
-version=$(grep 'VERSION\s*=' ./src/tm/__init__.py | cut -d= -f2 | tr -d "' ")
+
+version=v$(grep 'VERSION\s*=' ./src/tm/__init__.py | cut -d= -f2 | tr -d "' ")
 
 ./bin/mkdist
-gh-release create scythe-suite/tristo-mietitore v${version}
+
+git tag $version
+git push --tags
+
+github-release release \
+    --user scythe-suite \
+    --repo tristo-mietitore \
+    --tag $version \
+    --name "$1" \
+    --description "$2" \
+
+github-release upload \
+    --user scythe-suite \
+    --repo tristo-mietitore \
+    --tag $version \
+    --name tm \
+    --file ./release/tm
+
+github-release info \
+    --user scythe-suite \
+    --repo tristo-mietitore \
+    --tag $version
