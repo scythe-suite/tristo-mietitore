@@ -49,7 +49,7 @@ fi
 if [ ! -r ./vendor/babel ]; then
 	echocol "Getting pybabel"
 	curl -sL https://github.com/python-babel/babel/archive/v2.7.0.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel' '*/scripts' '*/cldr'
-    (cd vendor && python scripts/download_import_cldr.py)
+    (cd vendor && python3 scripts/download_import_cldr.py)
     rm -rf vendor/{scripts,cldr,docs}
     (cd vendor/babel/locale-data && ls -1 | grep -vf ../../../etc/locales-tokeep.txt) | while read lang; do
          rm -f "vendor/babel/locale-data/$lang"
@@ -72,13 +72,13 @@ mkdir $tempdir/dist/tm/mos
 for po in ./src/pos/*.po; do
 	bn=${po##*/}
 	mo=$tempdir/dist/tm/mos/${bn%.po}.mo
-	PYTHONPATH=./vendor python vendor/babel/messages/frontend.py compile -f -i $po -o $mo 2>&1
+	PYTHONPATH=./vendor python3 vendor/babel/messages/frontend.py compile -f -i $po -o $mo 2>&1
 done
 
 echocol "Preparing zip file"
 
 rm -f $(pwd)/release/tm
-python -m zipapp -p '/usr/bin/env python3' $tempdir/dist -o ./release/tm
+python3 -m zipapp -p '/usr/bin/env python3' $tempdir/dist -o ./release/tm
 
 rm -rf $tempdir
 
