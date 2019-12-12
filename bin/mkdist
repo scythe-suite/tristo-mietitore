@@ -80,6 +80,8 @@ echocol "Preparing zip file"
 rm -f $(pwd)/release/tm
 python -m zipapp -p '/usr/bin/env python3' $tempdir/dist -o ./release/tm
 
+rm -rf $tempdir
+
 echocol "Built version is"
 
 ./release/tm version
