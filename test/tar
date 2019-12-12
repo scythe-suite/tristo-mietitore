@@ -18,19 +18,19 @@ chmod -R u=rX,go= /tmp/tm_tar/base
 export PYTHONPATH=./release/tm
 
 echocol "Creation with permissions preservation and date setting to epoch"
-localdate=$(python -c 'import time; print "%d-%02d-%02d %02d:%02d:%02d" % time.localtime( 1 )[ :6 ]')
+localdate=$(python3 -c 'import time; print("%d-%02d-%02d %02d:%02d:%02d" % time.localtime( 1 )[ :6 ])')
 if diff -b \
-	<(python -c 'from tm.mkconf import tar, lstar; lstar( tar( "/tmp/tm_tar/base", verbose = False ) )' |  awk '{print $1, $4, $5, $6}' | sort) \
+	<(python3 -c 'from tm.mkconf import tar, lstar; lstar(tar("/tmp/tm_tar/base", verbose=False))' |  awk '{print $1, $4, $5, $6}' | sort) \
 	<(cat <<EOF
--r-------- $localdate one/a1
--r-------- $localdate one/b1
--r-------- $localdate three/a1
--r-------- $localdate three/b1
--r-------- $localdate two/a2
--r-------- $localdate two/b2
--r-x------ $localdate one/
--r-x------ $localdate three/
--r-x------ $localdate two/
+?r-------- $localdate one/a1
+?r-------- $localdate one/b1
+?r-------- $localdate three/a1
+?r-------- $localdate three/b1
+?r-------- $localdate two/a2
+?r-------- $localdate two/b2
+?r-x------ $localdate one/
+?r-x------ $localdate three/
+?r-x------ $localdate two/
 EOF
 ); then
 	echo OK
@@ -40,7 +40,7 @@ else
 fi
 
 echocol "Extraction and dereferencing"
-python -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'
+python -c 'from tm.mkconf import tar, untar; untar(tar("/tmp/tm_tar/base", verbose=False), "/tmp/tm_tar/extract")'
 if [ -h /tmp/tm_tar/extract/three ]; then
 	echo FAIL
 	exit 1
