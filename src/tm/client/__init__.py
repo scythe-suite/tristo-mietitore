@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -111,15 +111,15 @@ def untar(data, dir="."):
 def upload_tar(glob=".*", dir="."):
     conn = urlopen(
         BASE_URL,
-        urlencode({"signature": SIGNATURE, "tar": tar(join(HOME, dir), glob, False)}),
+        urlencode({"signature": SIGNATURE, "tar": tar(join(HOME, dir), glob, False)}).encode('utf-8'),
     )
-    ret = conn.read()
+    ret = conn.read().decode('utf-8')
     conn.close()
     return ret
 
 
 def download_tar():
-    conn = urlopen(o, urlencode({"signature": SIGNATURE}))
+    conn = urlopen(BASE_URL, urlencode({"signature": SIGNATURE}).encode('utf-8'))
     untar(conn.read(), HOME)
     conn.close()
     return ""
@@ -131,7 +131,7 @@ if __name__ == "__main__":
         dispatch = {
             "ul": upload_tar,
             "dl": download_tar,
-            "id": lambda *args: " ".join([SIGNATURE.split(":")[0], INFO]),
+            "id": lambda *args: " ".join([SIGNATURE.split(".")[0], INFO]),
         }
         res = dispatch[verb](*sys.argv)
         if res:

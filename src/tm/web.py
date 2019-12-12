@@ -1,8 +1,7 @@
-from base64 import decodestring, encodestring
+from base64 import decodestring, encodebytes
 from codecs import BOM_UTF8
 from errno import EEXIST
 from hashlib import sha256
-from hmac import new as mac
 from logging import INFO, FileHandler, Formatter, StreamHandler, getLogger
 from os import O_CREAT, O_EXCL, O_WRONLY, close, environ, getpid, makedirs
 from os import open as os_open
@@ -15,6 +14,7 @@ from time import time
 from jinja2 import PackageLoader
 
 from flask import Flask, render_template, request
+from itsdangerous import Signer
 from tm.hashconf import hashtar
 from tm.zipgettext import translation
 
@@ -78,7 +78,7 @@ app.jinja_env.install_gettext_translations(translations)
 
 
 def _sign(uid):
-    return "{0}:{1}".format(uid, mac(app.config["SECRET_KEY"], uid, sha256).hexdigest())
+    return Signer(app.config["SECRET_KEY"]).sign(uid).decode('utf-8')
 
 
 def _as_text(msg="", code=200, headers={"Content-Type": "text/plain;charset=UTF-8"}):
@@ -116,7 +116,7 @@ def sign(uid):
 # returns None if the signature is malformed, or invalid
 def extract_uid(signature):
     try:
-        uid, check = signature.split(":")
+        uid, check = signature.split(".")
     except ValueError:
         return None
     else:
@@ -128,14 +128,14 @@ def bootstrap(uid):
     try:
         info, signature = sign(uid)
         client_code = (
-            encodestring(
+            encodebytes(
                 render_template(
                     "__init__.py",
                     info=info,
                     signature=signature,
                     base_url=app.config["BASE_URL"],
-                ).encode("utf8")
-            )
+                ).encode('utf-8')
+            ).decode('utf-8')
             if signature
             else None
         )
@@ -163,8 +163,7 @@ def bootstrap(uid):
         else:
             app.logger.exception("")
             return _as_text(
-                BOM_UTF8
-                + "print 'echo \"{0}\"'\n".format(
+                 "print('echo \"{0}\"')\n".format(
                     _("An unexpected bootstrap error occurred!")
                 )
             )
@@ -185,9 +184,9 @@ def handle():
             EVENTS_LOG.info("Unauthorized: {0}@{1}".format(uid, request.remote_addr))
             return _as_text("# {0}\n".format(_("Invalid or absent signature!")), 401)
         if "tar" in request.form:  # this is an upload
-            data = decodestring(request.form["tar"])
+            data = decodestring(request.form["tar"].encode('utf-8'))
             dest = join(app.config["UPLOAD_DIR"], uid, str(int(time() * 1000)) + ".tar")
-            with open(dest, "w") as f:
+            with open(dest, "wb") as f:
                 f.write(data)
             tf = TarFile.open(dest, mode="r")
             names = tf.getnames()
@@ -222,4 +221,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

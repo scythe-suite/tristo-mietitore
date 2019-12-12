@@ -2,7 +2,7 @@
 #
 # To use this bootstrap script define the following bash function
 #
-# 	sign() { eval $( python -c "from urllib2 import urlopen; exec urlopen( '{{ base_url if base_url else request.url_root }}$1' ).read()" ); }
+# 	sign() { eval $( python3 -c "from urllib.request import urlopen; exec(urlopen('{{ base_url if base_url else request.url_root }}$1').read().decode('utf-8'))"); }
 #
 # and then invoke it as:
 #
@@ -11,30 +11,26 @@
 echo = lambda message: 'echo "{0}"'.format(message)
 
 # {% if client_code %}
-# {% if not config.DEBUG %}
+#{% if not config.DEBUG %}
 import sys
-from base64 import decodestring
+def muted_excepthook(t, v, tb):
+	print(echo( """{{ _( "An unexpected installation error occurred!" ) }}""" ))
+	sys.exit()
+sys.excepthook = muted_excepthook
+#{%- endif %}
+
+from base64 import decodebytes
 from errno import EEXIST, ENOENT
 from os import chmod, makedirs
 from os.path import abspath, dirname, expanduser, expandvars, isdir, join
 from subprocess import check_output
-
-
-def muted_excepthook(t, v, tb):
-    print(echo("""{{ _( "An unexpected installation error occurred!" ) }}"""))
-    sys.exit()
-
-
-sys.excepthook = muted_excepthook
-# {%- endif %}
-
 
 HOME = abspath(expandvars(expanduser("""{{ config.HOME }}""")))
 CLIENT_PATH = abspath(
     expandvars(expanduser("""{{ config.CLIENT_PATH }}""".replace("### home ###", HOME)))
 )
 ENVIRONMENT_SETUP = """{{ config.ENVIRONMENT_SETUP }}""".replace("### home ###", HOME)
-CLIENT_CODE = decodestring("""{{ client_code }}""").replace("### home ###", HOME)
+CLIENT_CODE = decodebytes("""{{ client_code }}""".encode('utf-8')).decode('utf-8').replace("### home ###", HOME)
 INFO = """{{ info }}"""
 
 try:
