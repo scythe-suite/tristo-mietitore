@@ -40,7 +40,7 @@ else
 fi
 
 echocol "Extraction and dereferencing"
-python -c 'from tm.mkconf import tar, untar; untar(tar("/tmp/tm_tar/base", verbose=False), "/tmp/tm_tar/extract")'
+python3 -c 'from tm.mkconf import tar, untar; untar(tar("/tmp/tm_tar/base", verbose=False), "/tmp/tm_tar/extract")'
 if [ -h /tmp/tm_tar/extract/three ]; then
 	echo FAIL
 	exit 1
@@ -49,7 +49,7 @@ else
 fi
 
 echocol "Re-extraction"
-if python -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'; then
+if python3 -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'; then
 	echo OK
 else
 	echo FAIL
@@ -58,7 +58,7 @@ fi
 
 echocol "Re-extraction after setting perms to 0000"
 find /tmp/tm_tar/extract -depth -exec chmod a= {} \;
-python -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'
+python3 -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'
 if diff -b <( find /tmp/tm_tar/extract | sort ) <( cat <<EOF
 /tmp/tm_tar/extract
 /tmp/tm_tar/extract/one
@@ -83,7 +83,7 @@ find /tmp/tm_tar/extract -depth -exec chmod u+rwX {} \;
 echo mess.a > /tmp/tm_tar/extract/one/a1
 echo mess.b > /tmp/tm_tar/extract/two/b2
 rm /tmp/tm_tar/extract/three/a1
-python -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'
+python3 -c 'from tm.mkconf import tar, untar; untar( tar( "/tmp/tm_tar/base", verbose = False ), "/tmp/tm_tar/extract" )'
 if diff -qr /tmp/tm_tar/extract /tmp/tm_tar/base; then
 	echo OK
 else
