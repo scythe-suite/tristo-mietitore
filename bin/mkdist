@@ -8,63 +8,29 @@ fi
 
 echocol "Setup dirs"
 
-tempdir=$(mktemp -d /tmp/tm-XXXXXXXXX) || exit 1
+tempdir=$(mktemp -d /tmp/sf-XXXXXXXXX) || exit 1
 
-mkdir -p $tempdir/dist
+mkdir -p "$tempdir/pip"
+mkdir -p "$tempdir/dist"
+rm -rf ./release
 mkdir -p ./release
-mkdir -p ./vendor
 
 echocol "Vendorizing [begin]"
-if [ ! -d ./vendor/flask ]; then
-	echocol "Getting flask"
-	curl -sL https://github.com/pallets/flask/tarball/1.1.1 | tar -C ./vendor --strip 2 --wildcards -zxvf - '*/flask'
-fi
-if [ ! -d ./vendor/jinja2 ]; then
-	echocol "Getting jinja2"
-	curl -sL https://github.com/pallets/jinja/tarball/2.10.3 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/jinja2'
-fi
-if [ ! -d ./vendor/werkzeug ]; then
-	echocol "Getting werkzeug"
-	curl -sL https://github.com/pallets/werkzeug/tarball/0.16.0 | tar -C ./vendor --strip 2 --exclude 'docs' --wildcards -zxvf - '*/werkzeug'
-fi
-if [ ! -d ./vendor/markupsafe ]; then
-	echocol "Getting markupsafe"
-	curl -sL https://github.com/pallets/markupsafe/tarball/1.1.1 | tar -C ./vendor --strip 2 --wildcards -zxvf - '*/markupsafe'
-fi
-if [ ! -d ./vendor/itsdangerous ]; then
-	echocol "Getting itsdangerous"
-	curl -sL https://github.com/pallets/itsdangerous/archive/1.1.0.tar.gz | tar -C ./vendor --strip 2 --wildcards -zxvf - '*/itsdangerous'
-fi
-if [ ! -d ./vendor/click ]; then
-	echocol "Getting click"
-	curl -sL https://github.com/pallets/click/tarball/7.0 | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/click'
-fi
-if [ ! -r ./vendor/pytz ]; then
-    echocol "Getting pytz"
-    (cd vendor &&\
-        curl -sLO https://files.pythonhosted.org/packages/e7/f9/f0b53f88060247251bf481fa6ea62cd0d25bf1b11a87888e53ce5b7c8ad2/pytz-2019.3-py2.py3-none-any.whl &&\
-        unzip pytz-2019.3-py2.py3-none-any.whl &&\
-        rm -rf pytz-2019.3-py2.py3-none-any.whl pytz-2019.3.dist-info)
-fi
-if [ ! -r ./vendor/babel ]; then
-	echocol "Getting pybabel"
-	curl -sL https://github.com/python-babel/babel/archive/v2.7.0.tar.gz | tar -C ./vendor --strip 1 --wildcards -zxvf - '*/babel' '*/scripts' '*/cldr'
-    (cd vendor && python3 scripts/download_import_cldr.py)
-    rm -rf vendor/{scripts,cldr,docs}
-    (cd vendor/babel/locale-data && ls -1 | grep -vf ../../../etc/locales-tokeep.txt) | while read lang; do
-         rm -f "vendor/babel/locale-data/$lang"
-    done
-fi
+
+python3 -m pip install --ignore-installed --install-option="--prefix=$tempdir/pip" flask pytz Babel 2>&1
+
+rm -rf "$tempdir"/pip/lib/python3*/site-packages/*.egg-info
+cp -rv "$tempdir"/pip/lib/python3*/site-packages/* "$tempdir/dist"
+
 echocol "Vendorizing [end]"
 
 echocol "Copying source files to dist"
 
-cp -rv ./src/{tm,__main__.py} $tempdir/dist
-cp -rv ./vendor/* $tempdir/dist
+cp -rv ./src/{tm,__main__.py} "$tempdir/dist"
 
 echocol "Removing stale complied files"
 
-find $tempdir/dist -name __pycache__ -prune -exec rm -rf {} \;
+find "$tempdir/dist" -name __pycache__ -prune -exec rm -rf {} \;
 
 echocol "Compiling language files"
 
@@ -72,15 +38,14 @@ mkdir $tempdir/dist/tm/mos
 for po in ./src/pos/*.po; do
 	bn=${po##*/}
 	mo=$tempdir/dist/tm/mos/${bn%.po}.mo
-	PYTHONPATH=./vendor python3 vendor/babel/messages/frontend.py compile -f -i $po -o $mo 2>&1
+	PYTHONPATH="$tempdir/pip/lib/python3.7/site-packages/" python3 -m babel.messages.frontend compile -f -i $po -o $mo 2>&1
 done
 
 echocol "Preparing zip file"
 
-rm -f $(pwd)/release/tm
-python3 -m zipapp -p '/usr/bin/env python3' $tempdir/dist -o ./release/tm
+python3 -m zipapp -p '/usr/bin/env python3' "$tempdir/dist" -o ./release/tm
 
-rm -rf $tempdir
+rm -rf "$tempdir"
 
 echocol "Built version is"
 

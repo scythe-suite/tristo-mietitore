@@ -1,5 +1,4 @@
 local/
 release/
-vendor/
 src/pos/*.mo
 src/pos/*.pot
