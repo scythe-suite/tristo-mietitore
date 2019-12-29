@@ -4,7 +4,7 @@ from sys import argv, exit, stderr
 
 from tm import VERSION
 
-COMMANDS = "web", "mkconf", "untarconf", "hashconf", "mkresults", "listuids"
+COMMANDS = "web", "mkconf", "untarconf", "hashconf", "mkresults", "listuids", "tar"
 
 if __name__ == "__main__":
     try:
