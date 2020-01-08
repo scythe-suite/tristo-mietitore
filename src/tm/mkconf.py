@@ -63,7 +63,7 @@ def main():
         if args.upload_dir:
             out.write("\nUPLOAD_DIR = " + repr(args.upload_dir) + "\n")
 
-        tar_data = tar(args.tar_dir, args.filter, args.verbose)
+        tar_data = tar(args.tar_dir, args.filter, args.verbose, -1)
         out.write('TAR_DATA = """\n{}"""\n'.format(tar_data.decode('utf-8')))
 
         if args.registerd_uids:

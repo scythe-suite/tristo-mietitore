@@ -29,9 +29,10 @@ MAX_FILESIZE = 1024 * 1024
 MAX_NUM_FILES = 1024
 
 
-def tar(dir=".", glob=".*", verbose=True):
+def tar(dir=".", glob=".*", verbose=True, max_filesize=None):
     if not isdir(dir):
         raise ValueError("{0} is not a directory".format(dir))
+    if max_filesize is None: max_filesize = MAX_FILESIZE
     dir = abspath(dir)
     offset = len(dir) + 1
     glob = recompile(glob)
@@ -45,7 +46,7 @@ def tar(dir=".", glob=".*", verbose=True):
             for fpath in files:
                 path = join(base, fpath)
                 rpath = path[offset:]
-                if glob.search(rpath) and stat(path).st_size < MAX_FILESIZE:
+                if glob.search(rpath) and (max_filesize == -1 or stat(path).st_size < max_filesize):
                     try:
                         with open(path, "rb") as f:
                             ti = tf.gettarinfo(arcname=rpath, fileobj=f)
