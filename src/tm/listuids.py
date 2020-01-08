@@ -10,7 +10,7 @@ def main():
 
     conf_file = {}
     with open(args.conf_file, "r") as inf:
-        exec(inf, conf_file)
+        exec(inf.read(), conf_file)
     for UID, info in list(conf_file["REGISTERED_UIDS"].items()):
         print("{}\t{}".format(UID, info))
 

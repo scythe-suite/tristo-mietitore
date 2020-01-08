@@ -13,7 +13,7 @@ def main():
 
     conf_file = {}
     with open(args.conf_file, "r") as inf:
-        exec(inf, conf_file)
+        exec(inf.read(), conf_file)
     tar_data = conf_file["TAR_DATA"]
     untar(tar_data, args.output_dir)
 

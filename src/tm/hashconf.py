@@ -28,7 +28,7 @@ def main():
 
     conf_file = {}
     with open(args.conf_file, "r") as inf:
-        exec(inf, conf_file)
+        exec(inf.read(), conf_file)
     print(hashtar(conf_file["SECRET_KEY"], conf_file["TAR_DATA"]))
 
 
