@@ -17,10 +17,10 @@ mkdir -p ./release
 
 echocol "Vendorizing [begin]"
 
-python3 -m pip install --ignore-installed --install-option="--prefix=$tempdir/pip" flask pytz Babel 2>&1
+python3 -m pip install --ignore-installed --target="$tempdir/pip" flask pytz Babel 2>&1
 
-rm -rf "$tempdir"/pip/lib/python3*/site-packages/*.egg-info
-cp -rv "$tempdir"/pip/lib/python3*/site-packages/* "$tempdir/dist"
+rm -rf "$tempdir"/pip/*.egg-info
+cp -rv "$tempdir"/pip/* "$tempdir/dist"
 
 echocol "Vendorizing [end]"
 
@@ -38,7 +38,7 @@ mkdir $tempdir/dist/tm/mos
 for po in ./src/pos/*.po; do
 	bn=${po##*/}
 	mo=$tempdir/dist/tm/mos/${bn%.po}.mo
-	PYTHONPATH="$tempdir/pip/lib/python3.7/site-packages/" python3 -m babel.messages.frontend compile -f -i $po -o $mo 2>&1
+	PYTHONPATH="$tempdir/pip/" python3 -m babel.messages.frontend compile -f -i $po -o $mo 2>&1
 done
 
 echocol "Preparing zip file"
