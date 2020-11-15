@@ -1,4 +1,4 @@
-from base64 import decodestring, encodebytes
+from base64 import decodebytes, encodebytes
 from codecs import BOM_UTF8
 from errno import EEXIST
 from hashlib import sha256
@@ -184,7 +184,7 @@ def handle():
             EVENTS_LOG.info("Unauthorized: {0}@{1}".format(uid, request.remote_addr))
             return _as_text("# {0}\n".format(_("Invalid or absent signature!")), 401)
         if "tar" in request.form:  # this is an upload
-            data = decodestring(request.form["tar"].encode('utf-8'))
+            data = decodebytes(request.form["tar"].encode('utf-8'))
             dest = join(app.config["UPLOAD_DIR"], uid, str(int(time() * 1000)) + ".tar")
             with open(dest, "wb") as f:
                 f.write(data)

@@ -15,7 +15,7 @@ def main():
     with open(args.conf_file, "r") as inf:
         exec(inf.read(), conf_file)
     tar_data = conf_file["TAR_DATA"]
-    untar(tar_data, args.output_dir)
+    untar(tar_data.encode('utf-8'), args.output_dir)
 
 if __name__ == "__main__":
     main()
